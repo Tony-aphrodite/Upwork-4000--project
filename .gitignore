@@ -11,3 +11,4 @@ deck/
 docs/
 coverage
 next-env.d.ts
+.vercel
