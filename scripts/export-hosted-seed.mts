@@ -9,6 +9,10 @@
  *   npx tsx scripts/export-hosted-seed.mts
  *
  * Writes supabase/hosted-users.sql (six sign-ins) and supabase/hosted-seed.sql (the data).
+ *
+ * Both schemas are exported. `restricted` holds what the money is really made of - landed costs,
+ * the margin on every sale, the gain and loss on the rate - and the owner's reports are empty
+ * without it. Its rows are no less real than the orders; they are simply behind another door.
  */
 import { writeFileSync } from "node:fs";
 import { Database, seed, PEOPLE } from "../libs/db/src/index.ts";
@@ -20,49 +24,53 @@ const pg = db.service;
 
 // Column types decide how a value is written: a jsonb array and a uuid[] both arrive here as a
 // JavaScript array and they are not written the same way.
+const SCHEMAS = ["public", "restricted"];
+
 const columns = await pg.query<{
+  table_schema: string;
   table_name: string;
   column_name: string;
   udt_name: string;
   is_array: string;
   generated: string;
 }>(`
-  select c.table_name, c.column_name, c.udt_name,
+  select c.table_schema, c.table_name, c.column_name, c.udt_name,
          case when c.data_type = 'ARRAY' then 'yes' else 'no' end as is_array,
          case when c.is_generated = 'ALWAYS' or c.identity_generation = 'ALWAYS' then 'yes' else 'no' end as generated
   from information_schema.columns c
-  where c.table_schema = 'public'
-  order by c.table_name, c.ordinal_position`);
+  where c.table_schema = any($1)
+  order by c.table_schema, c.table_name, c.ordinal_position`, [SCHEMAS]);
 
 const typeOf = new Map<string, { udt: string; array: boolean }>();
 // A column the database fills itself cannot be written to, and does not need to be: it is derived
 // from the row it belongs to.
 const generated = new Set<string>();
 for (const c of columns.rows) {
-  typeOf.set(`${c.table_name}.${c.column_name}`, { udt: c.udt_name, array: c.is_array === "yes" });
-  if (c.generated === "yes") generated.add(`${c.table_name}.${c.column_name}`);
+  typeOf.set(`${c.table_schema}.${c.table_name}.${c.column_name}`, { udt: c.udt_name, array: c.is_array === "yes" });
+  if (c.generated === "yes") generated.add(`${c.table_schema}.${c.table_name}.${c.column_name}`);
 }
 
 // Tables in an order that would satisfy the foreign keys even without the replica trick below.
 const fks = await pg.query<{ child: string; parent: string }>(`
-  select rel.relname as child, ref.relname as parent
+  select n.nspname || '.' || rel.relname as child, pn.nspname || '.' || ref.relname as parent
   from pg_constraint con
   join pg_class rel on rel.oid = con.conrelid
   join pg_class ref on ref.oid = con.confrelid
   join pg_namespace n on n.oid = rel.relnamespace
-  where con.contype = 'f' and n.nspname = 'public'`);
+  join pg_namespace pn on pn.oid = ref.relnamespace
+  where con.contype = 'f' and n.nspname = any($1)`, [SCHEMAS]);
 
 const tables = (
-  await pg.query<{ table_name: string }>(`
-    select table_name from information_schema.tables
-    where table_schema = 'public' and table_type = 'BASE TABLE' order by table_name`)
-).rows.map((r) => r.table_name);
+  await pg.query<{ qualified: string }>(`
+    select table_schema || '.' || table_name as qualified from information_schema.tables
+    where table_schema = any($1) and table_type = 'BASE TABLE' order by table_schema, table_name`, [SCHEMAS])
+).rows.map((r) => r.qualified);
 
-const inPublic = new Set(tables);
+const exported = new Set(tables);
 const parents = new Map<string, Set<string>>(tables.map((t) => [t, new Set<string>()]));
 for (const { child, parent } of fks.rows) {
   // A reference to auth.users is not something this file loads, so it cannot hold a table back.
-  if (child !== parent && inPublic.has(parent)) parents.get(child)?.add(parent);
+  if (child !== parent && exported.has(parent)) parents.get(child)?.add(parent);
 }
 
 const ordered: string[] = [];
@@ -78,7 +86,7 @@ while (ordered.length < tables.length) {
 
 function literal(table: string, column: string, value: unknown): string {
   if (value === null || value === undefined) return "null";
-  const type = typeOf.get(`${table}.${column}`);
+  const type = typeOf.get(`${table}.${column}`); // table is schema-qualified
   const quote = (s: string) => `'${s.replace(/'/g, "''")}'`;
 
   if (type?.array) {
@@ -103,7 +111,8 @@ const parts: string[] = [
 ];
 
 for (const table of ordered) {
-  const result = await pg.query<Record<string, unknown>>(`select * from public.${table}`);
+  const [schema, name] = table.split(".") as [string, string];
+  const result = await pg.query<Record<string, unknown>>(`select * from ${schema}."${name}"`);
   if (result.rows.length === 0) continue;
   const cols = Object.keys(result.rows[0]!).filter((c) => !generated.has(`${table}.${c}`));
   parts.push(`-- ${table}: ${result.rows.length} rows`);
@@ -111,7 +120,7 @@ for (const table of ordered) {
     const chunk = result.rows.slice(i, i + 200);
     const values = chunk.map((row) => `(${cols.map((c) => literal(table, c, row[c])).join(", ")})`);
     parts.push(
-      `insert into public.${table} (${cols.map((c) => `"${c}"`).join(", ")}) values\n  ${values.join(",\n  ")}\non conflict do nothing;`,
+      `insert into ${schema}."${name}" (${cols.map((c) => `"${c}"`).join(", ")}) values\n  ${values.join(",\n  ")}\non conflict do nothing;`,
     );
   }
   parts.push("");
@@ -119,13 +128,13 @@ for (const table of ordered) {
 }
 
 // Identity columns were filled by the database; its counters have to be moved past what was loaded.
-const identities = await pg.query<{ table_name: string; column_name: string }>(`
-  select table_name, column_name from information_schema.columns
-  where table_schema = 'public' and is_identity = 'YES'`);
-for (const { table_name, column_name } of identities.rows) {
+const identities = await pg.query<{ table_schema: string; table_name: string; column_name: string }>(`
+  select table_schema, table_name, column_name from information_schema.columns
+  where table_schema = any($1) and is_identity = 'YES'`, [SCHEMAS]);
+for (const { table_schema, table_name, column_name } of identities.rows) {
   parts.push(
-    `select setval(pg_get_serial_sequence('public.${table_name}', '${column_name}'),` +
-      ` coalesce((select max("${column_name}") from public.${table_name}), 1), true);`,
+    `select setval(pg_get_serial_sequence('${table_schema}.${table_name}', '${column_name}'),` +
+      ` coalesce((select max("${column_name}") from ${table_schema}.${table_name}), 1), true);`,
   );
 }
 
