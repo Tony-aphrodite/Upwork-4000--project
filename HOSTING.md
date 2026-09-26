@@ -52,7 +52,7 @@ parents first, so the file needs no special privileges and no disabled constrain
 
 ## Where it runs
 
-https://9-26-test-demo.vercel.app - this repository on Vercel against a hosted Supabase project.
+https://qirsh-live.vercel.app - this repository on Vercel against a hosted Supabase project.
 The sign-ins are listed on the page; the password for all of them is `qirsh-demo`.
 
 ## Then the application
