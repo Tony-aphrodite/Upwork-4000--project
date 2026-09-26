@@ -7,7 +7,6 @@
  */
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { KeyRound } from "lucide-react";
 import { useDb } from "@/lib/db";
 import { useI18n, type MessageKey } from "@/i18n/i18n";
 
@@ -50,11 +49,6 @@ export function HostedSignIn() {
 
   return (
     <form onSubmit={submit} className="card mx-auto w-full max-w-sm space-y-4 p-5">
-      <p className="flex items-center gap-2 text-sm text-muted">
-        <KeyRound className="size-4" aria-hidden="true" />
-        {t("signin.hosted_note")}
-      </p>
-
       <div>
         <label className="label" htmlFor="email">{t("signin.email")}</label>
         <input
@@ -95,14 +89,16 @@ export function HostedSignIn() {
               <button
                 type="button"
                 onClick={() => { setEmail(person.email); setPassword(DEMO_PASSWORD); setError(null); }}
-                className="flex w-full items-baseline gap-2 rounded-lg px-2 py-1.5 text-start text-sm hover:bg-[#eef2ef]"
+                className="block w-full rounded-lg px-2 py-2 text-start text-sm hover:bg-[#eef2ef]"
               >
-                <span className="font-medium">{person.name}</span>
-                <span className="text-xs text-ink-3">
-                  {t(`role.${person.role}` as MessageKey)}
-                  {"at" in person ? ` · ${person.at}` : ""}
+                <span className="flex flex-wrap items-baseline gap-x-2">
+                  <span className="font-medium">{person.name}</span>
+                  <span className="text-xs text-ink-3">
+                    {t(`role.${person.role}` as MessageKey)}
+                    {"at" in person ? ` · ${person.at}` : ""}
+                  </span>
                 </span>
-                <span className="ms-auto truncate text-xs text-ink-3" dir="ltr">{person.email}</span>
+                <span className="mt-0.5 block break-all text-xs text-ink-3" dir="ltr">{person.email}</span>
               </button>
             </li>
           ))}
