@@ -1,0 +1,13 @@
+node_modules
+.next
+dist
+out
+.nx
+.env*
+*.tsbuildinfo
+proposal.md
+*.pptx
+deck/
+docs/
+coverage
+next-env.d.ts

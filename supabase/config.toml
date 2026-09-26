@@ -1,0 +1,23 @@
+# Supabase CLI project config. `supabase start` runs the migrations in supabase/migrations
+# locally; `supabase db push` applies them to the hosted project. supabase/local/* is for the
+# in-browser demo only and is never pushed.
+project_id = "qirsh"
+
+[api]
+schemas = ["public"]          # `restricted` (costs, margins) is deliberately not exposed
+extra_search_path = ["public"]
+max_rows = 1000
+
+[auth]
+site_url = "http://localhost:3000"
+enable_signup = false         # personal accounts are created by the owner, no open sign-up
+jwt_expiry = 3600
+enable_refresh_token_rotation = true
+refresh_token_reuse_interval = 30   # tolerates a retried refresh on a weak connection
+
+[auth.email]
+enable_confirmations = true
+secure_password_change = true
+
+[storage]
+file_size_limit = "5MiB"

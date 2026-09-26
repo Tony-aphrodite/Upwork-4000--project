@@ -1,0 +1,26 @@
+{
+  "name": "qirsh",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "workspaces": [
+    "apps/*",
+    "libs/*"
+  ],
+  "scripts": {
+    "dev": "nx dev web",
+    "build": "nx run-many -t build",
+    "test": "nx run-many -t test",
+    "typecheck": "nx run-many -t typecheck",
+    "ci": "nx run-many -t typecheck test build"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "nx": "23.2.1",
+    "typescript": "5.9.3",
+    "vitest": "^3.2.4"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.117.2"
+  }
+}

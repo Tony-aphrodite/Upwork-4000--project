@@ -1,0 +1,174 @@
+@import "tailwindcss";
+
+/* Tenant branding arrives at runtime (white-label): the shell sets --brand and --accent from
+   the environment's settings. Everything else is fixed. */
+:root {
+  --brand: #1e4d3b;
+  --brand-ink: #ffffff;
+  --accent: #d9a441;
+  --ink: #15201b;
+  --ink-2: #3b4a43;
+  --ink-3: #66756e;
+  --line: #e2e8e4;
+  --canvas: #f5f7f5;
+  --surface: #ffffff;
+  --sand-bg: #f6ead0;
+  --sand-ink: #6f5310;
+  --red-bg: #fbe3df;
+  --red-ink: #a1261a;
+  --ok-bg: #dff0e5;
+  --ok-ink: #1d6b44;
+  --warn-bg: #fdf0d5;
+  --warn-ink: #8a5a00;
+  --info-bg: #e5eef8;
+  --info-ink: #1f4f86;
+}
+
+@theme inline {
+  --color-brand: var(--brand);
+  --color-brand-ink: var(--brand-ink);
+  --color-accent: var(--accent);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-line: var(--line);
+  --color-canvas: var(--canvas);
+  --color-surface: var(--surface);
+  --color-sand-bg: var(--sand-bg);
+  --color-sand-ink: var(--sand-ink);
+  --color-red-bg: var(--red-bg);
+  --color-red-ink: var(--red-ink);
+  --color-ok-bg: var(--ok-bg);
+  --color-ok-ink: var(--ok-ink);
+  --color-warn-bg: var(--warn-bg);
+  --color-warn-ink: var(--warn-ink);
+  --color-info-bg: var(--info-bg);
+  --color-info-ink: var(--info-ink);
+  --font-sans: var(--font-inter), var(--font-arabic), ui-sans-serif, system-ui, sans-serif;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+body {
+  background: var(--canvas);
+  color: var(--ink);
+  font-feature-settings: "tnum" 1, "cv11" 1;
+}
+[dir="rtl"] body {
+  font-family: var(--font-arabic), var(--font-inter), system-ui, sans-serif;
+}
+
+@layer components {
+/* Amounts line up in columns and never wrap mid-number. */
+.num {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.card {
+  min-width: 0;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+}
+
+.input {
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid #cfd8d3;
+  border-radius: 10px;
+  background: #fff;
+  padding: 0.55rem 0.75rem;
+  font-size: 16px; /* 16px keeps iOS from zooming into the field */
+  outline: none;
+}
+.input:focus {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 18%, transparent);
+}
+.input[aria-invalid="true"] {
+  border-color: var(--red-ink);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  min-height: 44px;
+  padding: 0.5rem 1rem;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: background-color 0.15s, box-shadow 0.15s, opacity 0.15s;
+}
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.btn-primary {
+  background: var(--brand);
+  color: var(--brand-ink);
+}
+.btn-primary:not(:disabled):hover {
+  background: color-mix(in srgb, var(--brand) 88%, black);
+}
+.btn-secondary {
+  background: #fff;
+  color: var(--ink);
+  border: 1px solid #cfd8d3;
+}
+.btn-secondary:not(:disabled):hover {
+  background: #f1f4f2;
+}
+.btn-ghost {
+  color: var(--ink-2);
+}
+.btn-ghost:not(:disabled):hover {
+  background: #eef2ef;
+}
+.btn-danger {
+  background: var(--red-ink);
+  color: #fff;
+}
+.btn-sm {
+  min-height: 36px;
+  padding: 0.3rem 0.7rem;
+  font-size: 0.85rem;
+}
+
+}
+
+:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+table {
+  position: relative;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+.fade-in {
+  animation: fade-in 0.25s ease-out both;
+}
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: none; }
+}
+
+@media print {
+  .no-print { display: none !important; }
+}
+
+/* The page title receives focus on navigation for screen readers; no ring for that. */
+[data-page-title]:focus {
+  outline: none;
+}
