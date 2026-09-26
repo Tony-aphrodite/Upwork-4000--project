@@ -83,6 +83,7 @@
   "order.subtitle": "Prices are fixed in dollars. Give a discount per line, enter today's rate, save.",
   "order.worked.fill": "Fill in the worked example",
   "order.worked.missing": "The worked example's products aren't in this catalogue.",
+  "order.worked.offline": "No connection, so the dealer could not be looked up. Choose one from the list on this phone; the rest of the example is filled in.",
   "order.customer": "Dealer",
   "order.customer.search": "Search your dealers by name, city or code",
   "order.customer.change": "Change",

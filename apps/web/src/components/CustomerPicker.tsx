@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Search } from "lucide-react";
 import { useI18n } from "@/i18n/i18n";
 import { useRpc } from "@/lib/db";
+import { useOutbox } from "@/lib/outbox";
 import { Badge } from "./ui";
 
 export interface PickedCustomer {
@@ -14,12 +15,31 @@ export interface PickedCustomer {
   code: string;
 }
 
-/** Search among the customers this person may see (an adviser: her own). */
+const matches = (c: PickedCustomer, q: string) =>
+  [c.name, c.city, c.code].some((field) => field.toLowerCase().includes(q));
+
+/**
+ * Search among the customers this person may see (an adviser: her own).
+ *
+ * With a connection the server does the searching, which is right: it knows who she may see and it
+ * does not have to send her the whole book. With no connection the phone searches the copy it
+ * already has - the same list, fetched in one go while there was a connection - because an adviser
+ * in a dead spot still has to be able to choose the dealer in front of her.
+ */
 export function CustomerPicker({ value, onChange }: { value: PickedCustomer | null; onChange: (c: PickedCustomer | null) => void }) {
   const { t } = useI18n();
+  const { offline } = useOutbox();
   const [q, setQ] = useState("");
   const [open, setOpen] = useState(false);
-  const list = useRpc<{ total: number; rows: PickedCustomer[] }>(open ? "customers_list" : null, { p_search: q.trim() || null, p_limit: 8 });
+  const search = q.trim();
+  const live = useRpc<{ total: number; rows: PickedCustomer[] }>(open && !offline ? "customers_list" : null, { p_search: search || null, p_limit: 8 });
+  // Kept for the dead spot: one unfiltered read, which the phone remembers. It runs when the screen
+  // opens, not when the search box is tapped, because by the time she taps it the connection may
+  // already be gone.
+  const book = useRpc<{ total: number; rows: PickedCustomer[] }>("customers_list", { p_search: null, p_limit: 400 });
+  const list = offline
+    ? { ...book, data: book.data ? { ...book.data, rows: book.data.rows.filter((c) => matches(c, search.toLowerCase())).slice(0, 8) } : null }
+    : live;
   if (value && !open) {
     return (
       <div className="flex items-center justify-between gap-3">

@@ -176,11 +176,18 @@ export default function NewOrder() {
     const small = byName("Hope 5.0L-B1");
     const large = byName("Hope 16.0LM-A1");
     if (!inv || !small || !large || !db || !userId) return toast("bad", t("order.worked.missing"));
-    const found = await db.as(userId).rpc<{ rows: Customer[] }>("customers_list", { p_search: "Ahmed Trading", p_limit: 1 });
+    // With no connection there is no one to ask for the dealer; the rest of the example still fills
+    // in, and she picks the dealer herself from what the phone has.
+    let found: Customer | null = null;
+    try {
+      found = (await db.as(userId).rpc<{ rows: Customer[] }>("customers_list", { p_search: "Ahmed Trading", p_limit: 1 })).rows[0] ?? null;
+    } catch {
+      toast("warn", t("order.worked.offline"));
+    }
     setDraft((d) => ({
       ...(d ?? newDraft()),
       id: crypto.randomUUID(),
-      customer: found.rows[0] ?? d?.customer ?? null,
+      customer: found ?? d?.customer ?? null,
       rate: "8200",
       kind: "order",
       lines: [
