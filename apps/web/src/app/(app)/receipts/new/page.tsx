@@ -10,7 +10,7 @@ import { Card, cx, ErrorNote, Field, Money, Note, PageHeader, Progress } from "@
 import { useI18n, type MessageKey } from "@/i18n/i18n";
 import { useDb, useMe, useRpc } from "@/lib/db";
 import { useOutbox } from "@/lib/outbox";
-import { compress, putProof, sha256 } from "@/lib/proofs";
+import { compress, saveProof, sha256 } from "@/lib/proofs";
 
 interface OpenOrder {
   id: string;
@@ -32,7 +32,7 @@ interface Result {
 
 export default function RecordReceipt() {
   const me = useMe()!;
-  const { db, userId } = useDb();
+  const { db, userId, hosted } = useDb();
   const { t, money, date } = useI18n();
   const { submit, offline } = useOutbox();
   const [id, setId] = useState(() => crypto.randomUUID());
@@ -49,6 +49,7 @@ export default function RecordReceipt() {
   const [error, setError] = useState<DbError | null>(null);
   const [result, setResult] = useState<Result | null>(null);
   const [queued, setQueued] = useState(false);
+  const [photoWaiting, setPhotoWaiting] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const today = useRpc<Today>("accounts_today");
@@ -106,9 +107,11 @@ export default function RecordReceipt() {
     if (problems.length || !photo || !customer || !amountMinor) return;
     setSaving(true);
     setError(null);
-    const path = `proofs/${me.tenant.id}/${id}.jpg`;
+    // The name of the object in the "proofs" bucket, which is also what the receipt stores: the
+    // storage policy compares the two, so they have to be the same string.
+    const path = `${me.tenant.id}/${id}.jpg`;
     try {
-      await putProof(path, photo.blob);
+      setPhotoWaiting((await saveProof(path, photo.blob, hosted)) === "waiting");
       const r = await submit<Result>(
         "record_receipt",
         {
@@ -283,6 +286,11 @@ export default function RecordReceipt() {
             {queued && (
               <div className="mt-2">
                 <Note tone="warn">{t("rec.queued")}</Note>
+              </div>
+            )}
+            {photoWaiting && !queued && (
+              <div className="mt-2">
+                <Note tone="warn">{t("rec.photo_waiting")}</Note>
               </div>
             )}
             {error && (

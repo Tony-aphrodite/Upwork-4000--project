@@ -8,6 +8,7 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import type { Database, DbError } from "@qirsh/db";
 import { HOSTED, HostedDatabase, hostedClient } from "./hosted";
+import { forget, isNetworkFailure, recall, remember } from "./lastseen";
 
 export type Role = "owner" | "marketing" | "adviser" | "warehouse";
 export interface Me {
@@ -125,8 +126,17 @@ export function DbProvider({ children }: { children: ReactNode }) {
 
   const refreshMe = useCallback(async () => {
     if (!db || !userId) return setMe(null);
-    const m = await db.as(userId).rpc<Me | null>("me");
-    setMe(m);
+    try {
+      const m = await db.as(userId).rpc<Me | null>("me");
+      setMe(m);
+      if (HOSTED && m) remember(`me.${userId}`, m);
+    } catch (e) {
+      // Reloaded with no connection: without this the app would sit on a spinner for ever, because
+      // it cannot draw a screen until it knows who is signed in.
+      const seen = HOSTED && isNetworkFailure(e) ? recall<Me>(`me.${userId}`) : null;
+      if (!seen) throw e;
+      setMe(seen.data);
+    }
   }, [db, userId]);
 
   useEffect(() => {
@@ -162,6 +172,7 @@ export function DbProvider({ children }: { children: ReactNode }) {
     } catch {
       /* ignore */
     }
+    forget();
     setUserId(null);
     setMe(null);
   }, []);
@@ -204,22 +215,33 @@ export function useMe() {
 
 /** Calls a read function and re-runs it whenever the database changes. */
 export function useRpc<T>(fn: string | null, args: Record<string, unknown> = {}, deps: unknown[] = []) {
-  const { db, userId, version } = useDb();
-  const [state, setState] = useState<{ data: T | null; error: DbError | null; loading: boolean }>({ data: null, error: null, loading: true });
+  const { db, userId, hosted, version } = useDb();
+  const [state, setState] = useState<{ data: T | null; error: DbError | null; loading: boolean; seenAt?: string }>({ data: null, error: null, loading: true });
   const key = JSON.stringify(args);
   useEffect(() => {
     if (!db || !userId || !fn) return;
     let live = true;
+    const seenKey = `${userId}.${fn}.${key}`;
     setState((s) => ({ ...s, loading: true }));
     db.as(userId)
       .rpc<T>(fn, args)
-      .then((data) => live && setState({ data, error: null, loading: false }))
-      .catch((error: DbError) => live && setState({ data: null, error, loading: false }));
+      .then((data) => {
+        if (hosted) remember(seenKey, data);
+        if (live) setState({ data, error: null, loading: false });
+      })
+      .catch((error: DbError) => {
+        if (!live) return;
+        // The server could not be reached. Show what it last said, and say when that was, rather
+        // than an empty screen: the adviser can still see her customers and prices in a dead spot.
+        const seen = hosted && isNetworkFailure(error) ? recall<T>(seenKey) : null;
+        if (seen) setState({ data: seen.data, error: null, loading: false, seenAt: seen.at });
+        else setState({ data: null, error, loading: false });
+      });
     return () => {
       live = false;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [db, userId, fn, key, version, ...deps]);
+  }, [db, userId, hosted, fn, key, version, ...deps]);
   return state;
 }
 

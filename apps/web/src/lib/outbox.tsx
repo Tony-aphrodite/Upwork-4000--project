@@ -10,6 +10,8 @@
  */
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import { useDb } from "./db";
+import { isNetworkFailure } from "./lastseen";
+import { flushProofs } from "./proofs";
 
 export interface Pending {
   key: string;
@@ -30,13 +32,6 @@ interface Outbox {
 
 const Ctx = createContext<Outbox | null>(null);
 const KEY = "qirsh.outbox";
-
-/** A request that never reached the server, as opposed to one the server refused. */
-function isNetworkFailure(e: unknown): boolean {
-  if (typeof navigator !== "undefined" && !navigator.onLine) return true;
-  const message = String((e as Error)?.message ?? e);
-  return /failed to fetch|networkerror|network request failed|load failed|timeout|fetch failed/i.test(message);
-}
 
 export function OutboxProvider({ children }: { children: ReactNode }) {
   const { db, userId } = useDb();
@@ -99,6 +94,12 @@ export function OutboxProvider({ children }: { children: ReactNode }) {
     [db, userId, offline, pending],
   );
 
+  // A photo can be waiting with nothing else in the queue: the receipt reached the server but the
+  // image did not. Send those as soon as there is a connection again.
+  useEffect(() => {
+    if (!offline) void flushProofs();
+  }, [offline]);
+
   // Back online: send what waited, oldest first. A repeat is harmless (idempotent ids).
   useEffect(() => {
     if (offline || !db || !userId || pending.length === 0 || flushing.current) return;
@@ -120,6 +121,8 @@ export function OutboxProvider({ children }: { children: ReactNode }) {
         left.shift();
         save([...left]);
       }
+      // Photos that could not leave the phone go now, too.
+      await flushProofs();
       db.changed();
       setLastSynced(done);
       flushing.current = false;

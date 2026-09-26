@@ -932,7 +932,7 @@ create table public.receipts (
   from_name text not null, -- the sender as it appears on the screenshot
   from_holder_id uuid references public.account_holders (id),
   to_account_id uuid not null references public.accounts (id),
-  proof_path text not null, -- storage: proofs/<tenant>/<receipt>.jpg
+  proof_path text not null, -- the object in the "proofs" bucket: <tenant>/<receipt>.jpg
   proof_sha256 text not null,
   status text not null default 'received' check (status in ('received', 'forwarded', 'confirmed')),
   forwarded_at timestamptz,
@@ -2557,7 +2557,14 @@ values ('proofs', 'proofs', false, 5242880, array['image/jpeg', 'image/png', 'im
        ('branding', 'branding', false, 2097152, array['image/png', 'image/svg+xml', 'image/jpeg'])
 on conflict (id) do nothing;
 
--- proofs/<tenant_id>/<receipt_id>.jpg
+-- Running this twice is harmless: the policies are replaced, the buckets are left alone.
+drop policy if exists "proofs: upload into own environment" on storage.objects;
+drop policy if exists "proofs: read what the receipt allows" on storage.objects;
+drop policy if exists "branding: read own environment" on storage.objects;
+drop policy if exists "branding: owner writes" on storage.objects;
+
+-- object name: <tenant_id>/<receipt_id>.jpg (the bucket is not part of the name, and
+-- receipts.proof_path holds exactly this string)
 create policy "proofs: upload into own environment" on storage.objects for insert to authenticated
 with check (
   bucket_id = 'proofs'

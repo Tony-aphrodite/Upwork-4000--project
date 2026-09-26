@@ -10,9 +10,23 @@ password. A hosted project has all of those for real.
 
 ## What changes in the code
 
-One file. `apps/web/src/lib/hosted.ts` sends the same `rpc()` calls to Supabase instead of to the
-tab, and `db.tsx` picks it when `NEXT_PUBLIC_SUPABASE_URL` is set. The screens, the rules, the
-migrations and the money code are untouched.
+`apps/web/src/lib/hosted.ts` sends the same `rpc()` calls to Supabase instead of to the tab, and
+`db.tsx` picks it when `NEXT_PUBLIC_SUPABASE_URL` is set. The screens, the rules, the migrations and
+the money code are untouched.
+
+Three things exist only because the server is now somewhere else:
+
+- **Proof photos go to Storage.** In the demo the screenshot stays in the tab. Here it is uploaded
+  to the private `proofs` bucket as `<tenant>/<receipt>.jpg`, which is exactly the string the
+  receipt stores, because the read policy compares the two. A photo that cannot be uploaded stays on
+  the phone and goes up with the outbox.
+- **The app itself is kept on the phone** (`apps/web/public/sw.js`). Without it, a phone that loses
+  the connection and then reloads gets nothing back, because the screens come from the network. Only
+  GET requests for the site are served this way; every save goes straight to the server.
+- **The last answer the server gave is kept too** (`apps/web/src/lib/lastseen.ts`), so a reload in a
+  dead spot comes back with the customers and the price list rather than empty screens. The app says
+  the lists are the last loaded ones instead of passing them off as current, and sign-out clears
+  them.
 
 ## Three files to run, in this order
 
@@ -58,8 +72,13 @@ refusing something.
 
 ## The offline queue
 
-Unchanged, and it matters more here than in the demo. A save that cannot reach the server waits in
-the phone's outbox and goes again when the connection returns; every write carries an id made on the
-phone, and `save_order` treats a repeat of that id as the same order. The queue also catches a
-request that leaves but never arrives, which is the common case on a weak connection rather than a
-clean offline switch.
+It matters more here than in the demo. A save that cannot reach the server waits in the phone's
+outbox and goes again when the connection returns; every write carries an id made on the phone, and
+`save_order` treats a repeat of that id as the same order. The queue also catches a request that
+leaves but never arrives, which is the common case on a weak connection rather than a clean offline
+switch. Photos waiting to be uploaded are sent in the same pass.
+
+What that adds up to, with the connection off: the screen you are on keeps working, a reload brings
+the app and the lists back as they were, and what you save waits on the phone. What it does not do
+is invent server answers: an address this phone never opened while it had a connection says so
+rather than showing another screen in its place.

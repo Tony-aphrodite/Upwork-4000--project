@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useI18n } from "@/i18n/i18n";
-import { getProof } from "@/lib/proofs";
+import { useDb } from "@/lib/db";
+import { proofSource } from "@/lib/proofs";
 
 export interface ProofReceipt {
   number: string;
@@ -16,26 +17,34 @@ export interface ProofReceipt {
 }
 
 /**
- * The uploaded screenshot if this browser has it; for the demo's replayed history, a drawing of
- * the kind of Arabic bank-app screenshot that arrives on WhatsApp, made from the receipt's data.
+ * The uploaded screenshot: the copy on this phone, or, on a hosted project, a link to the private
+ * bucket that lasts five minutes and only opens for someone the receipt lets in. For the demo's
+ * replayed history there is no upload, so it draws the kind of Arabic bank-app screenshot that
+ * arrives on WhatsApp from the receipt's own data.
  */
 export function ProofView({ r }: { r: ProofReceipt }) {
   const { t } = useI18n();
+  const { hosted } = useDb();
   const [url, setUrl] = useState<string | null>(null);
   useEffect(() => {
     let revoke: string | null = null;
+    let gone = false;
     if (!r.proof_path.startsWith("seed/")) {
-      getProof(r.proof_path).then((b) => {
-        if (b) {
-          revoke = URL.createObjectURL(b);
+      void proofSource(r.proof_path, hosted).then((found) => {
+        if (gone || !found) return;
+        if (found.blob) {
+          revoke = URL.createObjectURL(found.blob);
           setUrl(revoke);
+        } else if (found.url) {
+          setUrl(found.url);
         }
       });
     }
     return () => {
+      gone = true;
       if (revoke) URL.revokeObjectURL(revoke);
     };
-  }, [r.proof_path]);
+  }, [r.proof_path, hosted]);
 
   if (url) {
     // eslint-disable-next-line @next/next/no-img-element

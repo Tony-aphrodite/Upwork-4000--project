@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import {
-  BadgeCheck, BarChart3, Boxes, ClipboardCheck, FileText, Gauge, Languages, LogOut, Menu, Plus, Receipt, Settings, Ship, ShieldCheck, Tag, Users, Wallet, WifiOff, X,
+  BadgeCheck, BarChart3, Boxes, ClipboardCheck, FileText, Gauge, Languages, LogOut, Menu, Plus, Receipt, ServerCog, Settings, Ship, ShieldCheck, Tag, Users, Wallet, WifiOff, X,
 } from "lucide-react";
 import { useI18n, type MessageKey } from "@/i18n/i18n";
 import { useDb, type Role } from "@/lib/db";
@@ -43,7 +43,7 @@ export function Logo({ initials, color, size = 36 }: { initials: string; color: 
 }
 
 export function Shell({ children }: { children: ReactNode }) {
-  const { me, signOut } = useDb();
+  const { me, signOut, hosted } = useDb();
   const { t, locale, setLocale, date } = useI18n();
   const { offline, simulated, setSimulated, pending } = useOutbox();
   const path = usePathname();
@@ -97,6 +97,12 @@ export function Shell({ children }: { children: ReactNode }) {
         <ShieldCheck className="size-4" aria-hidden />
         {t("nav.checks")}
       </Link>
+      {hosted && (
+        <Link href="/server-checks" className="flex min-h-9 items-center gap-2 rounded-lg px-3 text-ink-2 hover:bg-[#e9eeea]">
+          <ServerCog className="size-4" aria-hidden />
+          {t("nav.server_checks")}
+        </Link>
+      )}
       <button className="btn btn-ghost btn-sm w-full justify-start" onClick={signOut}>
         <LogOut className="size-4" aria-hidden />
         {t("shell.switch_person")}

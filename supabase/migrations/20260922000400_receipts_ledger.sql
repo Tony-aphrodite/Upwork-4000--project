@@ -23,7 +23,7 @@ create table public.receipts (
   from_name text not null, -- the sender as it appears on the screenshot
   from_holder_id uuid references public.account_holders (id),
   to_account_id uuid not null references public.accounts (id),
-  proof_path text not null, -- storage: proofs/<tenant>/<receipt>.jpg
+  proof_path text not null, -- the object in the "proofs" bucket: <tenant>/<receipt>.jpg
   proof_sha256 text not null,
   status text not null default 'received' check (status in ('received', 'forwarded', 'confirmed')),
   forwarded_at timestamptz,
