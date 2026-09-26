@@ -9,7 +9,22 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { KeyRound } from "lucide-react";
 import { useDb } from "@/lib/db";
-import { useI18n } from "@/i18n/i18n";
+import { useI18n, type MessageKey } from "@/i18n/i18n";
+
+/**
+ * The six people the seed data belongs to. They are listed because this is a demonstration and
+ * whoever is looking at it has to be able to step into each role; a real deployment would have its
+ * own people and no list.
+ */
+const PEOPLE = [
+  { name: "Hamid Osman", email: "hamid@nileray.example", role: "owner" },
+  { name: "Amira Hassan", email: "amira@nileray.example", role: "adviser" },
+  { name: "Nusiba Ali", email: "nusiba@nileray.example", role: "adviser" },
+  { name: "Salma Idris", email: "salma@nileray.example", role: "marketing" },
+  { name: "Tarig Musa", email: "tarig@nileray.example", role: "warehouse" },
+  { name: "Yasir Babiker", email: "yasir@dongolapower.example", role: "owner", at: "Dongola Power" },
+] as const;
+const DEMO_PASSWORD = "qirsh-demo";
 
 export function HostedSignIn() {
   const { signInWithPassword } = useDb();
@@ -71,6 +86,28 @@ export function HostedSignIn() {
       <button type="submit" className="btn btn-primary w-full" disabled={busy}>
         {busy ? t("signin.signing_in") : t("signin.sign_in")}
       </button>
+
+      <div className="border-t border-line pt-4">
+        <p className="text-sm text-ink-3">{t("signin.hosted_people")}</p>
+        <ul className="mt-2 space-y-1">
+          {PEOPLE.map((person) => (
+            <li key={person.email}>
+              <button
+                type="button"
+                onClick={() => { setEmail(person.email); setPassword(DEMO_PASSWORD); setError(null); }}
+                className="flex w-full items-baseline gap-2 rounded-lg px-2 py-1.5 text-start text-sm hover:bg-[#eef2ef]"
+              >
+                <span className="font-medium">{person.name}</span>
+                <span className="text-xs text-ink-3">
+                  {t(`role.${person.role}` as MessageKey)}
+                  {"at" in person ? ` · ${person.at}` : ""}
+                </span>
+                <span className="ms-auto truncate text-xs text-ink-3" dir="ltr">{person.email}</span>
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
     </form>
   );
 }

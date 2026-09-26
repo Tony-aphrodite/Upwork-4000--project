@@ -413,7 +413,7 @@ export const CHECKS: Check[] = [
       const m = db.as(F.marketing);
       const orders = await m.query("select * from orders");
       const customers = await m.rpc<{ total: number }>("customers_list", {});
-      await m.rpc("save_customer", { p_id: F.customers.nile, p_name: "Nile Solar", p_city: "Omdurman", p_kind: "dealer", p_contact_name: "Mona", p_phone: "0123456788", p_segment: "A", p_pipeline: "active", p_source: "referral" });
+      await m.rpc("save_customer", { p_id: F.customers.nile, p_name: "Nile Solar", p_city: "Omdurman", p_kind: "dealer", p_contact_name: "Mona", p_phone: "0123456789", p_segment: "A", p_pipeline: "active", p_source: "referral" });
       await refused(m.query("select * from restricted.sale_facts"), { text: /permission/i });
       await refused(m.rpc("profit_report", { p_from: iso(-30), p_to: iso(0), p_by: "month" }), { code: "42501" });
       const receipts = await m.query("select * from receipts");

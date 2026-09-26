@@ -61,9 +61,9 @@ export default function SignIn() {
         <div className="card mb-6 p-5">
           <h2 className="mb-1 flex items-center gap-2 font-semibold">
             <KeyRound className="size-4 text-brand" aria-hidden />
-            {t("signin.title")}
+            {t(hosted ? "signin.hosted_title" : "signin.title")}
           </h2>
-          <p className="text-sm text-ink-2">{t("signin.explain")}</p>
+          <p className="text-sm text-ink-2">{t(hosted ? "signin.hosted_explain" : "signin.explain")}</p>
           <p className="mt-2 text-sm text-ink-2">{t("signin.worked_example")}</p>
         </div>
 
@@ -103,10 +103,13 @@ export default function SignIn() {
             <ShieldCheck className="size-4" aria-hidden />
             {t("signin.checks")}
           </Link>
-          <button className="btn btn-ghost" disabled={resetting} onClick={async () => { setResetting(true); await reset(); setResetting(false); }}>
-            <RotateCcw className="size-4" aria-hidden />
-            {resetting ? t("signin.resetting") : t("signin.reset")}
-          </button>
+          {/* Only the in-browser demo can be put back to the beginning; a server's data is its own. */}
+          {!hosted && (
+            <button className="btn btn-ghost" disabled={resetting} onClick={async () => { setResetting(true); await reset(); setResetting(false); }}>
+              <RotateCcw className="size-4" aria-hidden />
+              {resetting ? t("signin.resetting") : t("signin.reset")}
+            </button>
+          )}
           <p className="w-full text-xs text-ink-3">{t("signin.disclaimer")}</p>
         </div>
       </div>

@@ -4,7 +4,7 @@
  * (the local clock override sets "now"). Nothing is inserted behind the functions' backs except
  * the base records a go-live import would load: people, accounts, products, customers and rates.
  *
- * The business, names, codes and amounts are invented. All phone numbers are 0123456788.
+ * The business, names, codes and amounts are invented. All phone numbers are 0123456789.
  */
 import { lineOf, totalsOf, type LineResult } from "@qirsh/money";
 import type { Database } from "./client";
@@ -78,7 +78,7 @@ export const PEOPLE = {
 } as const;
 export const DEMO_TENANT_ID = TENANT;
 export const DEALER_TENANT_ID = DEALER_TENANT;
-const PHONE = "0123456788";
+const PHONE = "0123456789";
 
 interface Product {
   id: string;

@@ -725,5 +725,8 @@
   "signin.sign_in": "Sign in",
   "signin.signing_in": "Signing in",
   "signin.failed": "That email and password did not match.",
-  "signin.hosted_note": "This is the hosted version: the session comes from Supabase Auth and every rule is enforced by the database."
+  "signin.hosted_note": "This is the hosted version: the session comes from Supabase Auth and every rule is enforced by the database.",
+  "signin.hosted_title": "Sign in",
+  "signin.hosted_explain": "This is the hosted version. The session comes from Supabase Auth, and everything you are allowed to see and do is decided by the database, not by the screen: try the same calls yourself with the public key and you will get the same answers.",
+  "signin.hosted_people": "The people in this data. The password for all of them is qirsh-demo."
 }
