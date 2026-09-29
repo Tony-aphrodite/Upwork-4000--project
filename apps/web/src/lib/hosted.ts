@@ -26,7 +26,9 @@ export class ApiError extends Error {
 
 /** The same wording the in-browser demo gives, so a screen reads the same either way. */
 function friendly(message: string, code?: string, hint?: string): ApiError {
-  if (code === "42501" || message.startsWith("permission denied")) {
+  // Postgres' own "permission denied for table ..." is replaced; the database's role messages
+  // ("Your role (adviser) cannot do this.") already say what happened and pass through as written.
+  if (message.startsWith("permission denied")) {
     return new ApiError("You don't have permission to do that.", code, hint);
   }
   if (code === "23505") return new ApiError("That already exists.", code, hint);

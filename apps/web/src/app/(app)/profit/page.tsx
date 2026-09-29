@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { Info, Lock } from "lucide-react";
-import { Card, cx, Loading, Money, Note, PageHeader, Segmented, TableWrap, td, th } from "@/components/ui";
+import { Card, cx, isRefusal, Loading, Money, Note, PageHeader, Refused, Segmented, TableWrap, td, th } from "@/components/ui";
 import { useI18n, type MessageKey } from "@/i18n/i18n";
 import { useMe, useRpc } from "@/lib/db";
 
@@ -39,7 +39,7 @@ export default function Profit() {
   const [cur, setCur] = useState<"usd" | "eur">("usd");
   const [asMargin, setAsMargin] = useState(false);
   const r = range(me.today, period);
-  const { data, loading } = useRpc<Row[]>("profit_report", { p_from: r.from, p_to: r.to, p_by: by });
+  const { data, loading, error } = useRpc<Row[]>("profit_report", { p_from: r.from, p_to: r.to, p_by: by });
   const C = cur === "usd" ? "USD" : "EUR";
   const v = (row: Row, k: "revenue" | "gross" | "expenses" | "net_before" | "fx" | "net_after") => row[`${k}_${cur}` as keyof Row] as number;
 
@@ -81,6 +81,7 @@ export default function Profit() {
     </tr>
   );
 
+  if (isRefusal(error)) return <Refused title={t("nav.profit")} error={error} />;
   return (
     <div className="fade-in">
       <PageHeader title={t("nav.profit")} subtitle={period === "all" ? t("profit.subtitle_all", { to: date(r.to) }) : t("profit.subtitle", { from: date(r.from), to: date(r.to) })} />

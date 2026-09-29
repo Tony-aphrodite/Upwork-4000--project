@@ -40,6 +40,7 @@
   "status.cancelled": "ملغى",
   "status.converted": "تحوّل إلى طلب",
   "common.loading": "جارٍ التحميل…",
+  "common.refused": "رفضت قاعدة البيانات هذا الطلب لدورك، لذلك لا يصل إلى شاشتك شيء من هذه الصفحة.",
   "common.close": "إغلاق",
   "common.save": "حفظ",
   "common.all": "الكل",

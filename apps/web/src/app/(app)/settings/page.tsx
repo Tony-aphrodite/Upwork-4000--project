@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { History, Plus, Save } from "lucide-react";
 import { parseMoney } from "@qirsh/money";
 import { Logo } from "@/components/Shell";
-import { Badge, Card, ErrorNote, Field, Loading, Money, PageHeader, useToast } from "@/components/ui";
+import { Badge, Card, ErrorNote, Field, isRefusal, Loading, Money, PageHeader, Refused, useToast } from "@/components/ui";
 import { useI18n, type MessageKey } from "@/i18n/i18n";
 import { useAction, useRpc } from "@/lib/db";
 
@@ -24,7 +24,7 @@ export default function Settings() {
   const { t, number, dateTime } = useI18n();
   const toast = useToast();
   const action = useAction();
-  const { data } = useRpc<Full>("settings_full");
+  const { data, error } = useRpc<Full>("settings_full");
   const [f, setF] = useState<Record<string, string>>({});
   const [err, setErr] = useState<Error | null>(null);
   const [alias, setAlias] = useState<Record<string, string>>({});
@@ -41,6 +41,7 @@ export default function Settings() {
     });
   }, [data]);
 
+  if (isRefusal(error)) return <Refused title={t("nav.settings")} error={error} />;
   if (!data || !f.brand_name) return <Loading />;
   const set = (k: string) => (e: { target: { value: string } }) => setF({ ...f, [k]: e.target.value });
 

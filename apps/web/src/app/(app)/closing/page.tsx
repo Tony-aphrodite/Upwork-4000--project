@@ -1,7 +1,7 @@
 "use client";
 
 import { CheckCircle2, CircleAlert, Lock } from "lucide-react";
-import { Badge, Card, cx, Loading, Money, PageHeader, useToast } from "@/components/ui";
+import { Badge, Card, cx, isRefusal, Loading, Money, PageHeader, Refused, useToast } from "@/components/ui";
 import { useI18n, type MessageKey } from "@/i18n/i18n";
 import { useAction, useMe, useRpc } from "@/lib/db";
 
@@ -17,8 +17,9 @@ export default function Closing() {
   const { t, date, dateTime } = useI18n();
   const toast = useToast();
   const action = useAction();
-  const { data } = useRpc<Check[]>("closing_checks");
+  const { data, error } = useRpc<Check[]>("closing_checks");
   const lock = useRpc<{ closed_through: string; closed_at: string; by: string } | null>("period_lock");
+  if (isRefusal(error)) return <Refused title={t("nav.closing")} error={error} />;
   if (!data) return <Loading />;
   const failing = data.filter((c) => c.status !== "ok").length;
   const today = new Date(`${me.today}T12:00:00Z`);

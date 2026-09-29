@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { ArrowRight, Banknote, CircleAlert, FileCheck2, Plus } from "lucide-react";
 import { parseMoney, type Currency } from "@qirsh/money";
-import { Badge, Card, cx, Dialog, ErrorNote, Field, Loading, Money, PageHeader, Progress, Segmented, TableWrap, td, th, useToast } from "@/components/ui";
+import { Badge, Card, cx, Dialog, ErrorNote, Field, isRefusal, Loading, Money, PageHeader, Progress, Refused, Segmented, TableWrap, td, th, useToast } from "@/components/ui";
 import { useI18n, type MessageKey } from "@/i18n/i18n";
 import { useAction, useMe, useRpc } from "@/lib/db";
 
@@ -65,6 +65,7 @@ export default function Accounts() {
     return [...m.entries()];
   }, [accounts.data]);
 
+  if (isRefusal(accounts.error)) return <Refused title={t("nav.accounts")} error={accounts.error} />;
   if (!accounts.data) return <Loading />;
   return (
     <div className="fade-in">

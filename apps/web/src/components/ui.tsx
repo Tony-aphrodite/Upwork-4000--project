@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from "react";
-import { AlertTriangle, CheckCircle2, Info, Loader2, X, XCircle } from "lucide-react";
+import { AlertTriangle, CheckCircle2, Info, Loader2, Lock, X, XCircle } from "lucide-react";
 import type { Currency } from "@qirsh/money";
 import { useI18n, type MessageKey } from "@/i18n/i18n";
 
@@ -92,6 +92,30 @@ export function Spinner({ label }: { label?: string }) {
 export function Loading() {
   const { t } = useI18n();
   return <Spinner label={t("common.loading")} />;
+}
+
+/** True when the database refused the call for this person's role (Postgres 42501). */
+export function isRefusal(error: { message: string; code?: string } | null | undefined): error is { message: string; code: string } {
+  return error?.code === "42501";
+}
+
+/** A page the database refused for this person's role: says so, instead of an empty table or a spinner that never ends. */
+export function Refused({ title, error }: { title: string; error: { message: string } }) {
+  const { t } = useI18n();
+  return (
+    <div className="fade-in">
+      <PageHeader title={title} />
+      <Card>
+        <div className="flex items-start gap-3" role="alert">
+          <Lock className="mt-0.5 size-5 shrink-0 text-red-ink" aria-hidden />
+          <div>
+            <p className="font-semibold text-ink">{error.message}</p>
+            <p className="mt-1 text-sm text-ink-3">{t("common.refused")}</p>
+          </div>
+        </div>
+      </Card>
+    </div>
+  );
 }
 
 export function ErrorNote({ error }: { error: { message: string } | null | undefined }) {

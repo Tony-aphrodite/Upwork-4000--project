@@ -2,6 +2,7 @@
   "app.name": "Qirsh",
   "app.tagline": "Orders, money and stock for a solar distributor and its dealers",
   "common.loading": "Loading…",
+  "common.refused": "The database refused this for your role, so nothing from this page reaches your screen.",
   "common.close": "Close",
   "common.save": "Save",
   "common.all": "All",
