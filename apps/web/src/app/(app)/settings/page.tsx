@@ -112,11 +112,11 @@ export default function Settings() {
         </Card>
 
         <Card title={t("settings.history")} action={<History className="size-4 text-ink-3" aria-hidden />}>
-          {data.history.length === 0 ? (
+          {(data.history ?? []).length === 0 ? (
             <p className="text-sm text-ink-3">{t("settings.no_history")}</p>
           ) : (
             <ul className="space-y-2 text-sm">
-              {data.history.map((h, i) => (
+              {(data.history ?? []).map((h, i) => (
                 <li key={i} className="rounded-lg border border-line px-3 py-2">
                   <div className="text-xs text-ink-3">{dateTime(h.changed_at)} · {h.by ?? "—"}</div>
                   {Object.keys(h.new).map((k) => (
@@ -132,7 +132,7 @@ export default function Settings() {
 
         <Card title={t("settings.users")}>
           <ul className="divide-y divide-line text-sm">
-            {data.users.map((u) => (
+            {(data.users ?? []).map((u) => (
               <li key={u.id} className="flex items-center justify-between gap-3 py-2">
                 <span>
                   <span className="font-medium">{u.full_name}</span>
@@ -147,7 +147,7 @@ export default function Settings() {
 
         <Card title={t("settings.holders")}>
           <ul className="space-y-3 text-sm">
-            {data.holders.map((h) => (
+            {(data.holders ?? []).map((h) => (
               <li key={h.id}>
                 <div className="flex items-center gap-2">
                   <span className="font-medium">{h.name}</span>
@@ -179,7 +179,7 @@ export default function Settings() {
 
         <Card title={t("settings.kinds")}>
           <ul className="space-y-2 text-sm">
-            {data.account_kinds.map((k) => (
+            {(data.account_kinds ?? []).map((k) => (
               <li key={k.code} className="flex flex-wrap items-center gap-2">
                 <span className="font-medium">{k.label}</span>
                 {k.receives_customer_payments && <Badge tone="info">{t("settings.kind_receives")}</Badge>}
