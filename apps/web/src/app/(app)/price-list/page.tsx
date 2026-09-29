@@ -1,7 +1,7 @@
 "use client";
 
 import { FileDown } from "lucide-react";
-import { Card, Loading, Money, PageHeader, useToast } from "@/components/ui";
+import { Card, isRefusal, Loading, Money, PageHeader, Refused, useToast } from "@/components/ui";
 import { useI18n, type MessageKey } from "@/i18n/i18n";
 import { useMe, useRpc } from "@/lib/db";
 import { priceListPdf, shareOrDownload } from "@/lib/pdf";
@@ -20,7 +20,7 @@ export default function PriceList() {
   const me = useMe()!;
   const { t, date } = useI18n();
   const toast = useToast();
-  const { data } = useRpc<Item[]>("price_list");
+  const { data, error } = useRpc<Item[]>("price_list");
   const cats = [...new Set((data ?? []).map((i) => i.category))];
   const pdf = async () => {
     const names = Object.fromEntries(cats.map((c) => [c, t(`cat.${c}` as MessageKey)]));
@@ -28,6 +28,7 @@ export default function PriceList() {
     const how = await shareOrDownload(blob, `price-list-${me.today}.pdf`, t("price.share_text"));
     toast("ok", how === "shared" ? t("orderpage.pdf_shared") : t("orderpage.pdf_downloaded"));
   };
+  if (isRefusal(error)) return <Refused title={t("nav.price_list")} error={error} />;
   return (
     <div className="fade-in">
       <PageHeader
