@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Shamsy platform, steps 1 to 9: how it would be built</title>
+<style>
+  @page { size: A4; margin: 11mm 12mm; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 8.55pt/1.36 Calibri, Carlito, "Segoe UI", Arial, sans-serif; color: #1b2430; }
+  header { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 1.5pt solid #0f3d2e; padding-bottom: 5pt; margin-bottom: 7pt; }
+  h1 { font-size: 14.5pt; margin: 0; color: #0f3d2e; }
+  .sub { color: #5b6773; font-size: 8.5pt; margin-top: 2pt; }
+  .meta { text-align: right; color: #5b6773; font-size: 8pt; }
+  .cols { column-count: 2; column-gap: 12pt; }
+  section { break-inside: avoid; margin: 0 0 6.5pt; }
+  h2 { font-size: 9.4pt; margin: 0 0 2pt; color: #0f3d2e; }
+  h2 span { color: #b08a2e; font-weight: 700; margin-right: 3pt; }
+  p { margin: 0 0 2.5pt; }
+  ul { margin: 0; padding-left: 11pt; }
+  li { margin: 0 0 1.6pt; }
+  code { font-family: Consolas, "DejaVu Sans Mono", monospace; font-size: 7.6pt; background: #f1f4f2; padding: 0 2pt; border-radius: 2pt; }
+  .test { color: #0f3d2e; font-weight: 600; }
+  footer { margin-top: 4pt; border-top: 0.75pt solid #d6ddd9; padding-top: 4pt; font-size: 7.8pt; color: #5b6773; display: flex; justify-content: space-between; gap: 10pt; }
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>Shamsy platform, steps 1 to 9: how it would be built</h1>
+    <div class="sub">For the technical lead, ahead of our meeting. Every point maps to the final brief; nothing here adds scope.</div>
+  </div>
+  <div class="meta">Valdis Licis<br>29 September 2026</div>
+</header>
+
+<div class="cols">
+<section>
+  <h2><span>1</span>Stack and delivery</h2>
+  <ul>
+    <li>Your stack: Next.js and TypeScript in an Nx monorepo, Supabase (Postgres, Auth, Storage), Tailwind, Vercel, GitHub Actions.</li>
+    <li>One pull request per milestone. Before it starts, its acceptance tests are agreed in writing with you; the PR ships them as automated tests.</li>
+    <li>CI on every PR: typecheck, all tests, every migration applied to a fresh database, a preview deployment. Types generated from the schema, so a renamed column breaks the build, not a screen.</li>
+    <li>Every migration has a down. Documentation is written with the feature.</li>
+  </ul>
+</section>
+
+<section>
+  <h2><span>2</span>Money and history that never moves</h2>
+  <ul>
+    <li>Amounts in integer minor units with their currency. Rates as integers (parts per million); no floats anywhere money is decided.</li>
+    <li>Every order line, receipt and conversion stores the rate of its own day. The cost factor is frozen per shipment at the exchange (your 0.860234 example) and snapshotted onto the order line when margin is computed.</li>
+    <li>Settings (minimum rate, bands, limits) are versioned rows with <code>effective_from</code> and <code>set_by</code>, so a June report knows June's minimum.</li>
+    <li class="test">Test: last month's report, change today's rate, run again: identical to the last pound.</li>
+  </ul>
+</section>
+
+<section>
+  <h2><span>3</span>Book per event; accounts are balances</h2>
+  <ul>
+    <li>Each event is one movement between two accounts: customer to operating account, operating account to exchanger, exchanger to euro account. No movement skips an intermediary.</li>
+    <li>Balances are derived from movements, never stored and edited. Movements are append-only; a correction is a new movement.</li>
+    <li>"Pass-through accounts stand at zero" is a daily closing check, not a trigger, so money can sit there overnight without entries being refused.</li>
+  </ul>
+</section>
+
+<section>
+  <h2><span>4</span>Roles and cost visibility in Postgres</h2>
+  <ul>
+    <li>Four roles from a membership table read by row level security on every table; the screen never decides access.</li>
+    <li>Cost prices, landed cost and margin live in a schema the application role has no grants on. Owner reports read them through functions that check the role first.</li>
+    <li>Warehouse policies return no financial columns at all; owner login has two-factor authentication.</li>
+    <li class="test">Test: as adviser and as marketing, request costs through the API and through direct queries; every attempt is refused.</li>
+  </ul>
+</section>
+
+<section>
+  <h2><span>5</span>Receipts and transaction codes</h2>
+  <ul>
+    <li>The transaction code is unique. The same code with the same amount is a harmless duplicate; with a different amount, both are kept and the second goes to the open-questions list for the owner. Nothing is booked until he answers.</li>
+    <li>Proof screenshots in a private Storage bucket named by tenant and receipt, read through short-lived signed links, never replaced; a hash spots the same image sent twice.</li>
+  </ul>
+</section>
+
+<section>
+  <h2><span>6</span>Daily account capacity</h2>
+  <ul>
+    <li>The Sudan business day (Africa/Khartoum) is computed in the database; timestamps are stored in UTC and shown in each user's zone.</li>
+    <li>Receipts per account per Sudanese day are summed at entry: a warning above 15,000,000 SDG, and the 3,000,000 single-transfer cap enforced.</li>
+  </ul>
+</section>
+
+<section>
+  <h2><span>7</span>Discounts, approvals and release</h2>
+  <ul>
+    <li>Bands compared in whole cents (<code>discount &times; 100 &le; value &times; 3</code>), so exactly 3% and exactly 5% land where the brief words them.</li>
+    <li>Above 5%, the owner approves that exact line; the approval is consumed once.</li>
+    <li>Release is refused by the database unless the order is paid in full. Orders, movements and stock carry an audit trail.</li>
+  </ul>
+</section>
+
+<section>
+  <h2><span>8</span>Phones on 3G</h2>
+  <ul>
+    <li>Every write carries an idempotency key made on the phone, so a save sent twice is one record. Saves made offline wait in an outbox and go up on reconnect.</li>
+    <li>Indexed, paginated lists for tens of thousands of movements; numbers are never parsed as dates.</li>
+  </ul>
+</section>
+
+<section>
+  <h2><span>9</span>Going live: import and reconciliation</h2>
+  <ul>
+    <li>Import scripts per source (opening balances, customer balances, open orders, stock with landed cost, the ledger from the cash-register screenshots) run into staging first.</li>
+    <li>Every row the rules refuse, such as one code with two amounts, lands on the open-questions list for the owner to decide.</li>
+    <li>A reconciliation report per account and per customer against the owner's confirmed balances. Dry runs until it matches, then switch-over; the spreadsheets stop.</li>
+  </ul>
+</section>
+
+<section>
+  <h2><span>10</span>Data protection</h2>
+  <ul>
+    <li>Supabase in an EU region on Shamsy's own paid account, with daily backups, point-in-time recovery and Supabase's data processing agreement.</li>
+    <li>Building and testing happen on staging with invented or masked data. Access to live personal data is limited to Shamsy's people and one person on our side in Europe.</li>
+    <li>A full export of all data at any time.</li>
+  </ul>
+</section>
+</div>
+
+<footer>
+  <span><b>To open before the meeting:</b> the trial task, dealer-order-entry.vercel.app (39 automated tests), and a platform demo on a hosted Supabase project, qirsh-live.vercel.app, including a page that tries to break its own permissions.</span>
+  <span>Steps 10 to 12 are not built, but nothing above has to be redone for them.</span>
+</footer>
+</body>
+</html>

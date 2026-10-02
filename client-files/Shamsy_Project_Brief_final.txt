@@ -1,0 +1,847 @@
+ Project brief
+ Shamsy all-in-one business platform · confidential · for shortlisted candidates only
+
+
+
+
+ 1 · What this business actually does
+ Shamsy imports solar equipment and sells it in Sudan. Inverters, batteries, solar air
+ conditioners, and from this year solar panels, balance-of-system parts and solar water pumps.
+ We buy from suppliers in Saudi Arabia, China and the UAE. We do not install anything. We sell
+ to roughly 570 dealers and installers who do the installing, and to a smaller number of large end
+ customers.
+
+ A shipment arrives in Port Sudan, clears customs, and is trucked to our warehouse in
+ Omdurman. From there it goes out in ones and twos to dealers across the country. Our latest
+ battery and inverter container was over $220,000 of goods at purchase price; a container of
+ panels is 720 panels, around $93,000 in revenue.
+
+ The war destroyed most of the national grid. Generating capacity fell from 4,400 MW to about
+ 1,100 MW, and blackouts run to eighteen hours a day. Solar is how people keep a freezer
+ running and a phone charged. Demand is not our problem. Cash, currency and coordination are.
+
+
+
+ 2 · How the money moves — read this before anything else
+ The whole system exists because Sudan's banking does not work normally.
+
+ Euros → dollars → stock → Sudanese pounds → euros. The owner starts with euros.
+ Suppliers want dollars, so he exchanges euros for dollars and pays a commission on top.
+ Worked back, that tells him what each dollar of stock cost him in euros: the cost factor.
+
+ On the August 2026 shipment he received 1.1674 dollars per euro and paid €211 commission.
+ So every dollar of goods cost him €0.860234. Check: $59,983 of goods × 0.860234 = €51,599,
+ almost exactly the €51,593 he put into that shipment.
+
+ Each shipment gets its own factor, and once set it never changes: the euros were spent on the
+ day of the exchange, so a later move in the euro–dollar rate does not change what that stock
+ cost. When a supplier is paid with dollars already held — for instance from sales received on the
+ UAE account — the factor is what those dollars cost. The system multiplies dollar cost by the
+ shipment's factor to get cost in euros, which is how net profit in euros is calculated.
+
+ The stock is sold in Sudan in Sudanese pounds. Customers pay directly into bank accounts
+ held by money exchangers. The exchangers convert the pounds and pay the owner out in
+ euros, at their rate of that day.
+
+ Every result in both currencies, as an amount and as a margin. The owner must be able
+ to see each line below in dollars and in euros, side by side or with one switch, and each as an
+ amount and as a percentage of revenue:
+
+
+
+
+Shamsy                                                                                               1
+ Line                      What it means              In $                   In €
+
+ Gross profit              Revenue at the order       amount and margin %    amount and margin %
+                           rate minus landed cost.
+                           Whether we buy and sell
+                           well.
+
+ Net profit before         Gross profit minus         amount and margin %    amount and margin %
+ currency                  expenses such as
+                           salaries, warehouse and
+                           transport. The business
+                           on its own merits.
+
+ Currency result           What the Sudanese          amount                 amount
+                           pounds actually
+                           became, against what
+                           they were priced at.
+                           Gain or loss from the
+                           conversion.
+
+ Net profit after          Net profit plus the        amount and margin %    amount and margin %
+ currency                  currency result. What
+                           the business really
+                           earned after converting.
+
+
+ In dollars, costs are the landed cost in dollars. In euros, costs are converted through the
+ shipment's cost factor, and revenue through the rate at which the pounds were actually
+ converted — or, while still unconverted, the rate at which they were booked.
+
+ The result depends on where and how much is converted. Pounds can be converted by
+ an exchanger in Sudan, who pays out in euros; or paid by customers into the UAE account,
+ where they arrive as dirham or dollars and are converted through Airwallex — or not converted
+ at all, because dollars on the UAE account can pay the next supplier directly. With the pound
+ falling fast, more and more payments are expected to arrive in the UAE. So the system shows
+ the currency result per route — each exchanger, and the UAE account — with the rate
+ achieved, the volume converted, and what it earned or cost against the pricing rate. Money still
+ held in dollars or dirham is shown as held, at the rate it came in at, not counted as euro profit
+ until it is actually converted.
+
+ Prices are set in dollars. Each morning the day's rate is multiplied in, so what we charge in
+ pounds never lags the currency. The pound falls almost daily: in June 2026 we priced at around
+ 6,050 SDG per dollar; by September it is above 8,000. So the rate is never a constant in code. It
+ is a setting the owner changes, often every day, and below it sits a minimum rate, also set by
+ the owner, under which no adviser can quote.
+
+ We also price on a conservative calculation rate and convert at whatever the exchangers give
+ that day. The difference is the currency result: on the August shipment it was worth $4,135 —
+ gross margin 25.7%, net margin 30.3%.
+
+ The system works in four currencies: US dollars (prices, purchasing, margin), Sudanese
+ pounds (what customers pay), euros (what the owner starts and ends with) and UAE dirham
+ (payments received through the UAE account). Every amount carries its currency and the rate
+ at which it was converted.
+
+ The constraints everything comes from:
+
+
+Shamsy                                                                                               2
+ • A Sudanese bank account can receive about 15,000,000 SDG per day. Exchangers will not
+   hold more because of inflation.
+ • A single bank transfer is capped at 3,000,000 SDG. A 15 million payment arrives as five
+   transfers.
+ • So we work with four exchangers — Yassir, Tahani, Ali and Zain — holding eleven
+   accounts between them. When an account is full, the next customer gets a different account
+   number.
+ • Sometimes money lands on the owner's own operating account, Umhani, and has to be
+   forwarded to an exchanger. That is an extra step.
+ • Amira has an account in the UAE that receives dirham payments and passes them on. It is a
+   pass-through: it should always net to zero.
+ • To grow beyond what the exchangers can handle, customer payments are moving to a
+   company account in the UAE, run through Airwallex, receiving dirham and dollars. From
+   there money is converted or used to pay suppliers directly. The system must treat it as a full
+   account alongside the exchanger accounts: receipts in AED or USD, conversions with their
+   rate, supplier payments out of it.
+ • The pound loses value every week, so time between sale and conversion costs money.
+
+ Payment proofs arrive as screenshots — Bank of Khartoum (bankak) confirmations, mostly
+ in Arabic, forwarded on WhatsApp by advisers, privately and in group chats. The same
+ screenshot often arrives twice. Every proof carries a unique transaction code (‫)مقر ةيلمعلا‬,
+ and that code is the key to the entire administration. The comment field often holds a customer
+ name or a sequence like "Ihab 1" to "Ihab 6", which is how a split order is reconstructed.
+
+ The owner then has to forward each proof to the exchanger so the exchanger knows that
+ money is his. He has caught himself forgetting. Money that was received but never forwarded
+ sits with an exchanger who does not know it belongs to us.
+
+
+
+ 3 · Who works in this system
+ The owner, in Europe. Buys, arranges shipping, negotiates supplier terms, manages the
+ currency chain, sets the daily rate, approves large discounts and price overrides, and gives the
+ team weekly direction. Works in English and Dutch.
+
+ The head of marketing, Amira, in the UAE. Must not see cost prices or margins. Runs
+ Facebook (14,000 followers), TikTok (4,000) and the dealer WhatsApp groups (570 dealers).
+ Also receives dirham payments. Announces shipments before they land, so she needs to know
+ what is in stock and what is arriving.
+
+ Two sales advisers, Sana in Dongola and Marwa in Khartoum. Take orders, quote, chase
+ payments, forward proofs. Work on phones, often on a bad connection. Their current sales tool
+ is in Arabic; the new system starts in English, with Arabic added later. They must never see cost
+ prices or margins.
+
+ The warehouse, Jawahir in Omdurman. Receives shipments, releases goods against paid
+ orders, counts stock. Sees no financial data. Once took a cash payment, so cash receipts by
+ staff must be possible.
+
+
+
+
+Shamsy                                                                                               3
+ 4 · What already exists, and what it teaches
+ This is not a greenfield project. Four working tools already encode how the business runs. Read
+ them before designing anything.
+
+ The sales tool — Shamsy_Verkooptool_v7.html, version 7. A single offline HTML file the
+ advisers open on their phones, sent around as a WhatsApp attachment. Arabic, right-to-left. The
+ adviser enters the day's rate, picks products from a fixed list, sets quantities, and builds a
+ multi-line quote with totals in dollars and Sudanese pounds. Its rules are deliberate and must
+ survive into the new system:
+
+ • Advisers cannot change prices. Dollar prices are fixed. They choose product, quantity and
+   rate. The point is that nothing can go wrong in the calculation.
+ • Cost prices and margins never appear. An adviser sometimes hands her phone to a
+   customer.
+ • A minimum rate, enforced three ways: the field turns red with a message, the add button
+   refuses, and on leaving the field the value snaps back to the minimum. A higher rate is
+   always allowed. In the current file the minimum is hard-coded — at 8,000 since version 7 —
+   which is exactly what must not happen in the new system: the pound falls almost daily, from
+   around 6,050 per dollar in June to above 8,000 in September, so the minimum has to be a
+   setting the owner changes himself.
+ • Only SDG and USD. Saudi riyal was deliberately removed. With USD the rate field is
+   disabled and set to 1.
+ • Works offline, large buttons for thumbs, numbers formatted with thousands separators.
+
+ Planned for it and still open: customer name and date on the quote so it can be shared as a
+ receipt; editing quantity in an existing line; changing the minimum rate behind an owner-only
+ code; a share or print button; and possibly a second price column for pick-up in Saudi Arabia,
+ without transport and clearing costs.
+
+ The daily administration — Shamsy_Daily_Admin_v10.xlsx. Thirteen sheets: Read me,
+ Customers, one sheet per adviser, Warehouse, Forwarding check, Rates, Cash and bank,
+ Dashboard, Result, Products, Accounts, Checks. Order numbers carry a prefix per adviser, SA-
+ and MA-. Each order gets two payment lines that fill in its order number automatically. A
+ generated WhatsApp message tells the customer the amount, the account, and how many
+ transfers of 3,000,000 it takes. Payment methods: BANKAK, UAE Account, Cash. Discounts are
+ coloured by size, and above 5% the sheet refuses the entry unless the owner has marked the
+ order as approved.
+
+ The shipment dossier — Shamsy_Zending_Growatt_v24.xlsx. Every cost of a shipment —
+ invoice, sea freight, bank charges, customs clearing in several payments in SDG at their own
+ rates, inland transport — spread over the products pro rata to purchase value, with a 20%
+ safety uplift on indirect costs. On the current shipment that lifts the purchase price by 12.44%:
+ an inverter bought at $270 has a true cost of $303.58. Also tracks margin per order and the
+ supplier payment deadline.
+
+ The cash register — Shamsy_Kasregister. The event-based ledger built from 211 payment
+ screenshots: one line per unique transaction code, from which account to which account,
+ amount, comment, and whether it appears in the sales sheet. Plus a sheet of open questions
+ where nothing is booked until the owner answers.
+
+
+
+Shamsy                                                                                               4
+ Also available: the price list PDF (English, sales prices only), the investor deck, the HTML
+ dashboard prototype, all brand assets, and the product catalogues of our OEM lines.
+
+
+
+ 5 · What a day looks like now, and why it hurts
+ A dealer sends a WhatsApp message: two 5 kWh batteries and an inverter. An adviser opens
+ the sales tool, enters the rate, builds the quote, and sends a screenshot of it. She writes the
+ order in the daily spreadsheet.
+
+ The dealer pays in two or three instalments, each capped at 3 million pounds, into accounts
+ that may be full. He sends a screenshot of each transfer. The adviser forwards them to the
+ owner. The owner forwards them to the exchangers. Someone matches them to orders by hand,
+ in the evening, sometimes days later.
+
+ The warehouse releases goods on a WhatsApp message that sometimes arrives before the
+ money does.
+
+ At the end of a shipment, 64 payment proofs are reconciled against 22 orders across three
+ currencies. The earlier ledger was kept one tab per exchanger, which meant one event had to
+ be written in several places; the result was that the summary sheet missed 38 transactions
+ worth 103,803,000 SDG and the exchanger tabs missed 8 worth 20,570,000. Excel read
+ decimal numbers as dates. Account holders' names were spelled five ways.
+
+ What goes wrong, repeatedly:
+
+ • Payments cannot be matched to orders without reading a screenshot
+ • Proofs are not always forwarded to the exchanger
+ • Nobody knows how much room is left in an account today
+ • Stock leaves against a verbal confirmation
+ • Margin per shipment is known weeks after the goods have gone
+ • Nobody can prove the books balance
+
+
+
+ 6 · Principles the system must hold to
+ These come from the owner's own rules for his administration. They are not preferences.
+
+ • History must never move. The pound falls almost daily, so rates change constantly. Every
+   order line, receipt and conversion is stored with its amount, its currency and the rate of the
+   day it happened, and that rate is never recalculated from a newer one. An order placed at
+   8,000 SDG per dollar still shows 8,000 in six months when the rate may be 11,000. A report
+   on any past period must give exactly the same numbers whenever it is run, to the last pound.
+   Money is stored as integers in the smallest unit, never as floating-point numbers.
+ • Book per event, with accounts as balances. Every money movement is one line with an
+   origin and a destination. Customer to Umhani is one line; Umhani to an exchanger is a
+   second; exchanger to the owner's euro account is a third. Never book a movement under its
+   final destination and skip the intermediate step, or the intermediary becomes uncheckable.
+ • The transaction code is unique. The same code can appear only once. Duplicate
+   screenshots are harmless because of it.
+ • Same code, different amount: do not choose. Show both to the owner.
+
+Shamsy                                                                                              5
+ • When in doubt, book nothing. An unknown account goes on a question list. Nothing is
+   booked on it until the owner answers.
+ • Show contradictions, never smooth them over. A visible gap is better than a number
+   that looks right.
+ • Never invent an amount. Mark every assumption.
+
+
+
+ 7 · The build sequence
+ How the platform is built. One foundation, three modules on top of it, and a dashboard in
+ front. Every feature we need belongs to exactly one of these. Nothing is built outside them.
+
+
+ Part                  What it holds
+
+ Foundation            What every module stands on: login, users and roles, permissions in the database,
+                       environments for Shamsy and later for dealers, branding, and all configurable
+                       settings such as rates, currencies and discount thresholds.
+
+ Finance               Everything with money: orders, receipts and proofs, accounts and their daily limits,
+                       conversions between currencies, margin and profit, reports and closing checks.
+
+ Stock                 Everything with goods: products, purchasing and shipments, landed cost, stock
+                       levels and movements, release against paid orders.
+
+ Communication         Everything with customers: customer records and history, quotes and price lists, and
+                       later WhatsApp.
+
+ Dashboard             The front layer. It holds no data of its own; it shows what the three modules hold, per
+                       role.
+
+
+ A marketing module may follow later; it is not part of this project.
+
+ Ranked by how much each step takes off our hands and how much money it stops us losing.
+ Each step is a milestone and usable on its own. Steps 1 to 9 are this project. Steps 10 to 12
+ come later; they are listed so the foundation is built for them and nothing has to be done twice.
+
+
+
+
+Shamsy                                                                                                           6
+ #   Step             Module       What it does and why
+
+ 1   Platform setup   Foundation   Login: a personal account per user, email and password, with
+                                   password reset. Sessions that survive a weak connection. No
+                                   shared logins.
+
+                                   Roles: four, each enforced in the database with row level
+                                   security, not by hiding buttons.
+                                   • Owner — everything: prices, rates, users, margins, approvals.
+                                   • Marketing — reads customers, orders and stock, edits
+                                   customers; never sees cost prices or margins.
+                                   • Sales adviser — creates orders and receipts for her own
+                                   customers; never sees cost prices or margins.
+                                   • Warehouse — reads orders, records stock movements and
+                                   releases; sees no financial data.
+
+                                   Products and customers: the base records of the Stock and
+                                   Communication modules, created in this step because every
+                                   later step needs them.
+
+                                   Account holders: every exchanger account with all its name
+                                   spellings, so “Mogtaba”, “Mujtaba” and “Motgaba” are one
+                                   person.
+
+                                   Settings per environment: logo and house style, the discount
+                                   thresholds (now 3% and 5%), the minimum rate, which
+                                   currencies are used and which kinds of accounts exist — all
+                                   configurable, none of them written into the code.
+
+                                   Interface in English. Nothing else works without this step.
+
+ 2   Orders           Finance      The adviser records an order once, as she does in the sales tool
+                                   today: product and quantity, with totals in dollars and pounds.
+
+                                   Prices: fixed in dollars; the adviser cannot change them. The
+                                   owner can override a price manually.
+
+                                   Exchange rate: the day's rate converts the dollar total to
+                                   pounds. It can never be set below the minimum rate the owner
+                                   has set. The rate says nothing about the price of a product; it
+                                   only changes the currency.
+
+                                   Discounts: a separate decision, per order line, independent of
+                                   the rate. Every discount is highlighted — sand up to 3% of the
+                                   line value, red from 3% to 5%, and above 5% it cannot be
+                                   entered without the owner's approval.
+
+                                   Payment instructions: the order tells the customer which
+                                   account to pay into and in how many transfers of 3,000,000.
+
+ 3   Receipts, with   Finance      Each receipt is one line keyed on its transaction code: date,
+     proof and                     amount, from which account, to which account, comment, photo
+     status                        of the proof. A receipt can pay several orders and an order can
+                                   have several receipts. Duplicates are refused; the same code
+                                   with a different amount is flagged. Each receipt carries a status:
+                                   proof received, forwarded to the exchanger, confirmed by the
+                                   exchanger. Anything stuck lights up. This is where our evenings
+                                   go today, and where money disappears.
+
+
+
+
+Shamsy                                                                                                  7
+ #   Step             Module        What it does and why
+
+ 4   Accounts,        Finance       Every exchanger account, the owner's own account, the
+     limits and                     pass-through accounts and the Airwallex account in the UAE,
+     movements                      each with a live balance. Today's intake per account against the
+                                    15,000,000 daily limit, with a warning as it approaches. Transfers
+                                    between accounts, payouts by exchangers in euros with their
+                                    rate, cash taken by staff. Outstanding per exchanger.
+                                    Pass-through accounts must stand at zero.
+
+ 5   Release          Stock         The warehouse can only release goods for an order that is fully
+     against paid                   paid. The smallest step, the largest drop in risk.
+     orders
+
+ 6   Purchasing,      Stock         Euros converted to dollars with commission, giving the cost
+     landed cost                    factor. Supplier invoices. Freight, customs in several payments at
+     and stock                      their own rates, inland transport and bank charges, in USD, EUR,
+                                    AED or SDG, spread over the products pro rata to purchase value
+                                    with a 20% safety uplift on indirect costs. On our current Growatt
+                                    shipment that lifts the purchase price by 12.44%: an inverter
+                                    bought at $270 has a true cost of $303.58. Stock on hand,
+                                    minimum levels, every movement in and out, and what is in
+                                    transit. Kits of several products sold as one, such as battery
+                                    installation sets. Our own-brand model codes for OEM lines — SP
+                                    for balance-of-system parts, SWF for pumps — alongside the
+                                    supplier code.
+
+ 7   Margin, profit   Finance       Per product, order, customer, adviser, shipment, week and
+     and checks                     month — including a weekly overview — every result in dollars
+                                    and euros, as an amount and as a margin: gross profit, net
+                                    profit before currency, the currency result, and net profit
+                                    after currency. The currency result per route — each exchanger
+                                    and the UAE account — with the rate achieved and the volume
+                                    converted. Money still held in dollars or dirham shown separately
+                                    until it is converted. On our August 2026 shipment that read:
+                                    revenue $85,208, gross profit $21,918 at 25.7%, a currency
+                                    result of $4,135, net profit $27,604 at 30.3%. Expenses such as
+                                    salaries, and refunds to customers, as their own lines. And the
+                                    closing checks: calculated balance per account against the actual
+                                    balance; sold equals received plus outstanding; received equals
+                                    converted plus still on the accounts.
+
+ 8   Quotes and       Communicati   A clean quote PDF in our house style, in English, with customer
+     price lists      on            name, date, validity and payment terms such as 50% upfront and
+                                    50% before delivery. Some products, such as large solar pumps,
+                                    are sold only to order against a deposit, never from stock. Sent
+                                    through a WhatsApp share link. Status: sent, accepted, expired,
+                                    and one click from an accepted quote to an order. The same
+                                    catalogue produces the price list PDF.
+
+ 9   CRM              Communicati   Each dealer's profile: owner and decision-maker, phone and
+                      on            WhatsApp, city, type, purchasing power, monthly volume, brand
+                                    preference, current supplier, and what he still has in stock from
+                                    our last delivery. Segments A+ to D. Pipeline labels: consumer,
+                                    trader, to verify, quote sent, paid. The source of each customer.
+                                    Revenue per active dealer per month, and share of wallet: what
+                                    else each dealer sells that he does not buy from us, at what
+                                    price, from whom. That is the start of the market data this
+                                    platform exists to collect.
+
+
+
+
+Shamsy                                                                                                   8
+ #    Step              Module         What it does and why
+
+ 10   WhatsApp          Communicati    Not in this project. A shared inbox on one WhatsApp number,
+      Business API —    on             every message linked to the customer record, approved
+      later phase                      templates for follow-ups and shipment announcements, and the
+                                       24-hour conversation window respected. Until then we use
+                                       WhatsApp share links. Build the customer and message model so
+                                       this plugs in later without rework.
+
+ 11   Arabic            Foundation     Not in this project. An Arabic right-to-left interface and Arabic
+      interface —                      quote PDFs, as the advisers use today in the sales tool. Build for
+      later phase                      it from day one: no hard-coded text, every string in translation
+                                       files, layouts that can be mirrored, number and date formats per
+                                       language — so adding Arabic is translation work, not a rebuild.
+
+ 12   Dealer access     Foundation     Not in this project. Dealers log in to run their own quotes,
+      — later phase                    customers, stock and bookkeeping on our catalogue. Build the
+                                       data model multi-tenant, with every permission in the database,
+                                       from day one — so this becomes a switch rather than a rewrite.
+                                       The platform is white-label: each dealer environment carries its
+                                       own logo, colours and settings, so it can also be sold to others
+                                       under their own brand.
+
+
+ Why receipts and accounts come before quotes: a quote saves an adviser a few minutes.
+ Keying receipts on their code, tracking whether proofs reached the exchanger, and watching
+ account limits save hours a day and stop money leaking. The quote calculation itself is already
+ inside step 2; only the polished PDF waits until step 8.
+
+
+
+ 8 · Screens, and what each one is for
+ Products and stock. Answer "do we have it" in two seconds on a phone. Record what came in
+ and went out. Show what is below minimum and what is arriving. Cost price and margin exist
+ but are invisible to advisers and the warehouse.
+
+ Customers. Search by name, city, type, adviser and segment. A dealer operating in two cities
+ gets two records — deliberately.
+
+ Orders. Built like the sales tool: pick a customer, add products at fixed prices, set the rate, see
+ totals in dollars and pounds. Payment instructions generated for the customer.
+
+ Receipts. The screen used most, on a phone, on a weak connection. Photo of the proof,
+ transaction code, amount, accounts. Fast, and it must not lose data when the connection drops.
+
+ Accounts and exchangers. Every account with its balance and today's intake as a bar against
+ the daily limit. Transfers and payouts. Outstanding per exchanger.
+
+ Open questions. Every movement the system could not place — unknown account, same
+ code with different amounts, a payer who matches no customer — waiting for the owner's
+ answer.
+
+ Dashboard. What the owner opens first. What needs attention today: accounts near their limit,
+ proofs not forwarded, receipts not confirmed, customers overdue, stock below minimum, open
+ questions. What this shipment earned: gross profit, net profit before currency, currency result
+ and net profit after currency — each in dollars and euros, as amount and margin — plus the
+
+
+
+Shamsy                                                                                                      9
+ currency result per conversion route. Where the cash is: at customers, at exchangers, in stock.
+ How we are doing: margin over recent months, return on stock, and the share of orders
+ delivered straight from stock.
+
+ Settings. Users and roles, the day's rate and the minimum rate — both changed by the owner,
+ often daily — the calculation rate, the cost factor per shipment, reference data, company
+ details.
+
+
+
+ 9 · Where this is going, so build for it
+ Phase two turns the same system into a product our dealers use: their quotes, their customers,
+ their stock, their bookkeeping, at a price that is easy to say yes to.
+
+ A dealer who runs his business inside our system orders from us. His quotes are built on our
+ catalogue and our prices. And through it we see what the market is quoting and selling, and
+ what our dealers still hold, weeks before it reaches us as an order. They get a system; we get
+ the market.
+
+ So the data model is multi-tenant from day one, and every permission lives in the database.
+ The platform is also white-label and configurable: each environment has its own branding,
+ and every business rule that is specific to Shamsy — discount thresholds, minimum rate,
+ currencies, account types — is a setting, not code. That keeps the door open to reselling it and
+ to data-driven revenue beyond our own trade. Do not build the dealer screens. Do build a
+ structure that will not need rewriting for them.
+
+
+
+ 10 · The data model as we see it
+ A starting point, not a decision. Timestamps, soft delete and created_by everywhere. All
+ money as integers in the smallest unit.
+
+ tenants — the company; Shamsy now, dealers later
+
+ users — name, role (owner / marketing / adviser / warehouse), language, prefix for order
+ numbers
+
+ products — sku, name, brand, category (inverter / battery / panel / solar AC / pump /
+ balance-of-system / accessory), purchase_price_usd, landed_cost_usd, list_price_usd,
+ manual_price_usd, min_stock_level, active
+
+ kits and kit_lines — a bundle sold as one product
+
+ customers — name, type, city, phone, whatsapp, segment, source, assigned_adviser,
+ owner_name, decision_maker, purchasing_power, monthly_volume, brand_preference,
+ current_supplier, notes
+
+ orders and order_lines — order_number with adviser prefix, date, customer, adviser,
+ rate_sdg_per_usd, status; lines with product, quantity, list price, discount, approved_by
+
+ quotes and quote_lines — as orders, plus validity, payment terms and status
+
+ accounts — holder, bank, account number, type (exchanger / own / pass-through / staff / euro /
+ airwallex), exchanger, currency, daily_limit, active
+
+
+Shamsy                                                                                              10
+ account_aliases — every spelling of a holder's name
+
+ movements — the ledger. transaction_code (unique), date, amount, currency (USD / SDG /
+ EUR / AED), rate, from_account, to_account, type (receipt / transfer / payout / purchase /
+ expense / refund), comment, proof_url, proof_status (received / forwarded / confirmed)
+
+ movement_allocations — which part of a receipt pays which order; many to many
+
+ exchangers — name, contact, active
+
+ shipments, shipment_lines and shipment_costs — supplier, invoice, cost factor, and each
+ cost with its own currency and rate
+
+ stock_movements — product, quantity, reason, order, shipment, released_by
+
+ exchange_rates — date, calculation rate, actual rates per exchanger and for the UAE account,
+ set_by
+
+ conversions — date, from amount and currency, to amount and currency, rate, route (which
+ exchanger or the UAE account), fee
+
+ open_questions — the movement or record, what is unclear, the answer, answered_by
+
+
+
+ 11 · Non-functional requirements
+ • White-label and configurable: branding and business rules are settings per environment,
+   never hard-coded.
+ • English interface in phase one. Arabic right-to-left follows later, so no hard-coded strings and
+   a layout that can be mirrored.
+ • Works on a laptop and a phone browser. The team works on phones.
+ • Usable on 3G with frequent disconnects. Entries must survive a dropped connection.
+ • Numbers never parsed as dates, whatever the device locale.
+ • Every table paginated; assume tens of thousands of movements within two years.
+ • Audit trail on orders, movements and stock: who changed what, when.
+
+
+ Handover
+ A README covering local setup, environment variables and deployment. A schema diagram. A
+ seed script with realistic data from our real files. A short walkthrough of each screen. And a
+ one-page work instruction for advisers and the owner: what an adviser records at the moment
+ of sale, how a proof is numbered and filed, who forwards it to the exchanger and how that is
+ ticked off, and what the owner checks daily and weekly.
+
+
+ What we supply on day one
+ • The sales tool, Shamsy_Verkooptool_v7.html, version 7
+ • The daily administration, Shamsy_Daily_Admin_v10.xlsx
+ • The shipment dossier, Shamsy_Zending_Growatt_v24.xlsx
+ • The cash register built from 211 payment screenshots
+ • A sample of those screenshots, to see the bankak format
+
+Shamsy                                                                                                11
+ • The HTML dashboard prototype, with layout, colours and typography
+ • The price list PDF
+ • Brand assets: logos with and without the Arabic wordmark, colours, fonts
+ • Access to our GitHub organisation and Supabase project
+
+
+ How we build
+ • Technical lead. Every feature is defined in advance by our technical lead, with a goal
+   prompt, acceptance tests and the functional result expected. A feature is finished when its
+   tests pass and it works as described.
+ • Code. Next.js with TypeScript in an Nx monorepo on GitHub; Supabase; Tailwind; Vercel.
+ • Tests and deployment. GitHub Actions run the tests and deploy on every change. Every
+   change comes with tests and goes in through a reviewed pull request.
+ • Documentation is written with each feature, not at the end.
+
+
+
+ 12 · Going live
+ The system does not start empty. Before the team switches over, the developer imports from
+ our spreadsheets:
+
+ • the opening balance of every account, as confirmed by the owner on the switch-over date
+ • what every customer still owes, and every open order
+ • current stock per product, with its landed cost
+ • the ledger rebuilt from the payment screenshots in the cash register, with its open questions
+
+ After go-live the spreadsheets stop. Running both side by side is how the old books went wrong.
+
+
+
+ 13 · Acceptance tests
+ A milestone is paid when its tests pass on the live system. The minimum set:
+
+ • Landed cost. The current Growatt shipment's costs, entered as they are, give an inverter
+   bought at $270 a cost price of $303.58.
+ • Margin. The August 2026 shipment gives, in dollars: revenue $85,208, gross profit $21,918
+   at 25.7%, a currency result of $4,135, and net profit after currency of $27,604 at 30.3%. The
+   same lines in euros follow from the cost factor and the actual payouts recorded, and
+   switching between dollars and euros never changes the underlying records.
+ • History. Run last month's report, change today's rate, run it again: every number is
+   identical, to the last pound.
+ • Permissions. Logged in as an adviser or as marketing, a cost price or margin cannot be
+   retrieved — not on screen, not through the API, not by querying the database.
+ • Duplicates. Entering the same transaction code twice is refused; the same code with a
+   different amount lands on the open-questions list.
+ • Daily limit. Receipts on one account that pass 15,000,000 SDG on the same Sudanese day
+   trigger the warning.
+ • Discounts. 2% shows sand, 4% shows red, 6% cannot be saved without the owner's
+   approval.
+
+
+Shamsy                                                                                             12
+ • Release. The warehouse cannot release an order that is not fully paid.
+
+
+
+ 14 · Running it safely
+ • Hosting. Supabase on a paid plan, not the free tier, which pauses when idle. Daily backups
+   with point-in-time recovery. Paid by us, on our account.
+ • Export. A full export of all data at any time, so we are never locked in.
+ • Owner account. Two-factor authentication on the owner's login. That account approves
+   discounts and sees everything.
+ • Time zone. The business day is Sudan time (Africa/Khartoum). The daily account limit resets
+   at midnight in Sudan, whatever time zone the owner is working in. Store timestamps in UTC
+   and display them in the user's own time zone.
+ • Warranty. Sixty days of free fixes after final handover, for anything that does not work as
+   specified.
+ • Confidentiality. This brief, our data and our screenshots are shared only after a signed
+   confidentiality agreement.
+
+
+
+ 15 · Paid trial task
+ What this is. Before we award the project, the shortlisted candidates each build one small,
+ real piece of it: the screen where a sales adviser records an order. It takes six to eight hours
+ and we pay $100 for it, whether or not we continue with you. It shows us how you think about
+ money, rules and phones — which is what the whole project depends on.
+
+ The situation you are building for. A dealer in Khartoum asks our sales adviser on
+ WhatsApp for four inverters, two small batteries and one large battery. The adviser opens this
+ screen on her phone, picks the dealer, adds the products, gives a small discount where she is
+ allowed to, enters today's exchange rate, and sees what the dealer has to pay in US dollars and
+ in Sudanese pounds. Then she saves the order.
+
+ The rules the screen must enforce
+
+ 1. Prices are fixed. Each product has a price in US dollars. The adviser cannot change it.
+ 2. Discount is per line, and separate from everything else. The adviser may give a
+   discount in dollars on any line. The discount is measured as a percentage of that line's value
+   (price × quantity):
+    – above 0% and up to 3% — the line turns sand, and saving is allowed
+    – above 3% and up to 5% — the line turns red, and saving is still allowed
+    – above 5% — saving is blocked until the owner approves that line
+ 3. The exchange rate is one number for the whole order. It converts dollars to pounds. It
+   has nothing to do with discounts or prices. It can never be lower than the minimum rate of
+   8,000 SDG per dollar. If the adviser types a lower number, the screen refuses it and puts
+   the value back to 8,000. A higher number is always fine.
+ 4. A saved order never changes. The rate the adviser entered is stored on the order. If the
+   rate setting changes tomorrow, yesterday's order still shows exactly the same amounts.
+
+ Test data to use
+
+
+
+
+Shamsy                                                                                              13
+ Product                                            Price per unit
+
+ SPF 6000 ES Plus — 6 kW inverter                   $515
+
+ SPE 12000 ES — 12 kW inverter                      $975
+
+ Hope 5.0L-B1 — 5 kWh battery                       $810
+
+ Hope 16.0LM-A1 — 16 kWh battery                    $2,070
+
+
+ Customers: three invented dealers, for example Ahmed Trading in Khartoum, Nile Solar in
+ Omdurman and Dongola Power in Dongola.
+
+ Users: two accounts — one adviser, one owner. Only the owner can approve a discount above
+ 5%.
+
+ A worked example — your screen must produce exactly these numbers
+
+ Rate entered: 8,200 SDG per dollar.
+
+
+ Line          Quantity ×       Line value   Discount        Discount %   Colour        Line total
+               price
+
+ SPF 6000 ES   4 × $515         $2,060       $40             1.94%        sand          $2,020
+ Plus
+
+ Hope          2 × $810         $1,620       $70             4.32%        red           $1,550
+ 5.0L-B1
+
+ Hope          1 × $2,070       $2,070       $150            7.25%        blocked       $1,920
+ 16.0LM-A1
+
+
+ As the adviser, the order cannot be saved while line 3 is blocked. If she removes line 3 instead,
+ the order totals $3,570, which is 29,274,000 SDG, and can be saved.
+
+ After the owner approves line 3: the order totals $5,490, which is 45,018,000 SDG.
+
+ Then change the rate setting to 9,000 and reopen the saved order. It must still show 8,200 and
+ 45,018,000 SDG.
+
+ Try to enter a rate of 7,900: it must be refused and return to 8,000.
+
+ What you do not need to build. Payments, stock, PDF quotes, customer management,
+ Arabic, and polished design. Plain and clean is fine. We are judging the logic, not the looks.
+
+ Technical expectations
+
+ • Next.js with TypeScript, Supabase, Tailwind — the same stack as the real project
+ • Money stored as whole numbers in cents, never as decimals
+ • The rate stored on each saved order
+ • The discount rules enforced in the database or on the server, not only in the browser
+ • Works on a phone screen
+
+ What you deliver
+
+ 1. A link to the working screen, hosted on your own Vercel and Supabase
+
+
+Shamsy                                                                                               14
+ 2. Access to the code repository
+ 3. A screen recording of five minutes or less, walking through the worked example above
+ 4. A short note: what you would do differently when building the real system, and anything in
+   our rules that seems unclear or wrong
+
+ How we judge it
+
+
+ What we check                                        Why it matters
+
+ The worked example gives exactly the numbers         Every report in the real system depends on correct
+ above                                                arithmetic
+
+ The 5% block cannot be bypassed, not even by         Discount control is money control
+ calling the server directly
+
+ A saved order does not change when the rate          This is the rule the whole administration rests on
+ changes
+
+ Money is stored in cents and the rate is stored on   Rounding errors and moving history are the
+ the order                                            costliest bugs we can get
+
+ It works on a phone                                  Our advisers work on phones, on weak connections
+
+ Your note shows you understood the problem           We want someone who thinks along, not only builds
+
+
+ Time and payment. Six to eight hours. You have three working days from receiving the task.
+ We pay $100 on delivery, whether or not we award you the project.
+
+
+
+ 16 · What we are not asking for, yet
+ The WhatsApp Business API with a shared inbox — share links do the job for now. Dealer logins
+ and dealer screens — build the model, not the screens. A native mobile app. Accounting export.
+ Automatic reading of payment screenshots. An Arabic right-to-left interface and Arabic quotes
+ — build for them, do not build them yet. Warranty and serial-number tracking — though we will
+ need warranty and return handling before our own-brand OEM lines go on sale, so design the
+ product model with it in mind.
+
+ If you think one of these belongs in phase one, tell us why.
+
+
+
+ 17 · Where we want your opinion
+ We are traders, not software people. Tell us where we are wrong.
+
+ • Our receipts arrive as Arabic bankak screenshots. Would you extract the transaction code,
+   amount, accounts and comment automatically from the image, and at what point would that
+   pay for itself? We have 211 of them from one shipment.
+ • A receipt can pay several orders. How would you let an adviser allocate it quickly on a phone?
+ • We plan to store the rate on each order and each movement. Is there a better way to keep
+   reports stable over time?
+ • The sales tool works offline today. How much of that do we lose, and how would you keep
+   order entry working on a dropped connection?
+
+
+
+
+Shamsy                                                                                                     15
+ • What would you change in the data model to make dealer access a switch rather than a
+   rewrite?
+ • What are we going to regret in six months that we cannot see now?
+
+
+
+
+Shamsy                                                                                    16
+

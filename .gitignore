@@ -1,0 +1,13 @@
+# Never commit: credentials and local environment files
+.secrets/
+.env*
+.vercel/
+
+# Dependencies and build output
+node_modules/
+.next/
+.nx/
+dist/
+out/
+coverage/
+*.tsbuildinfo

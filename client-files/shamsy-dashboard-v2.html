@@ -1,0 +1,1264 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shamsy Dashboard</title>
+  <style>
+    /* --------------------------------------------------------------------------
+       1. HUISSTIJL & VARIABELEN
+       -------------------------------------------------------------------------- */
+    :root {
+      --green: #0E3B2E;
+      --green-2: #14503C;
+      --gold: #C9922E;
+      --gold-l: #E0B45C;
+      --ink: #16202B;
+      --ink-2: #5A6772;
+      --line: #DFE5E9;
+      --panel: #F4F7F6;
+      
+      --alert-urgent: #D9534F;
+      --alert-warning: #E67E22;
+      --alert-neutral: #5A6772;
+      --alert-success: #27AE60;
+
+      /* WhatsApp specifieke rustige accentkleur */
+      --whatsapp-green: #25D366;
+      --whatsapp-chat-bg: #E5DDD5;
+
+      --sidebar-width: 250px;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: #FFFFFF;
+      color: var(--ink);
+      line-height: 1.5;
+      font-size: 14px;
+      -webkit-font-smoothing: antialiased;
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .num {
+      font-variant-numeric: tabular-nums;
+      font-feature-settings: "tnum";
+    }
+
+    /* --------------------------------------------------------------------------
+       SIDEBAR MENU
+       -------------------------------------------------------------------------- */
+    .sidebar {
+      width: var(--sidebar-width);
+      background-color: var(--green);
+      color: #FFFFFF;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      border-right: 1px solid var(--green-2);
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      z-index: 100;
+    }
+
+    .sidebar-brand {
+      padding: 16px;
+      border-bottom: 4px solid var(--gold);
+      background-color: var(--green);
+    }
+
+    .sidebar-brand svg {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .brand-logo { flex-grow: 1; min-width: 0; }
+
+    .sidebar-toggle {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      flex-shrink: 0;
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 4px;
+      color: #FFFFFF;
+      cursor: pointer;
+      padding: 0;
+    }
+    .sidebar-toggle svg {
+      width: 22px;
+      height: 22px;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      fill: none;
+    }
+    .sidebar-toggle .icon-close { display: none; }
+    .sidebar.open .sidebar-toggle .icon-open { display: none; }
+    .sidebar.open .sidebar-toggle .icon-close { display: block; }
+    .sidebar-toggle:focus-visible { outline: 2px solid var(--gold-l); outline-offset: 2px; }
+
+    .sidebar-nav {
+      flex-grow: 1;
+      overflow-y: auto;
+      padding: 16px 0;
+    }
+
+    .nav-section-title {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--gold-l);
+      opacity: 0.8;
+      padding: 12px 16px 4px 16px;
+      font-weight: 700;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 16px;
+      color: rgba(255, 255, 255, 0.85);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 500;
+      transition: all 0.15s ease;
+      border-left: 3px solid transparent;
+      position: relative;
+    }
+
+    .nav-item:hover {
+      background-color: var(--green-2);
+      color: #FFFFFF;
+    }
+
+    .nav-item.active {
+      background-color: var(--green-2);
+      color: #FFFFFF;
+      border-left-color: var(--gold);
+      font-weight: 600;
+    }
+
+    .nav-icon {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      opacity: 0.9;
+    }
+
+    .nav-badge {
+      background-color: var(--whatsapp-green);
+      color: #FFFFFF;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 10px;
+      margin-left: auto;
+    }
+
+    .sidebar-footer {
+      border-top: 1px solid var(--green-2);
+      padding: 12px 0;
+      background-color: rgba(0, 0, 0, 0.15);
+    }
+
+    .user-profile {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 16px;
+      margin-top: 4px;
+    }
+
+    .user-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background-color: var(--gold);
+      color: var(--green);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 13px;
+      flex-shrink: 0;
+    }
+
+    .user-info { overflow: hidden; }
+
+    .user-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: #FFFFFF;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
+
+    .user-role {
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.6);
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
+
+    /* --------------------------------------------------------------------------
+       HOOFDCONTAINER & HEADER
+       -------------------------------------------------------------------------- */
+    .main-wrapper {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    header {
+      background-color: #FFFFFF;
+      border-bottom: 1px solid var(--line);
+      padding: 16px 24px;
+    }
+
+    .header-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .page-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    .header-meta {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-size: 13px;
+      flex-wrap: wrap;
+    }
+
+    .date-picker {
+      background-color: var(--panel);
+      color: var(--ink);
+      border: 1px solid var(--line);
+      padding: 6px 10px;
+      border-radius: 3px;
+      font-size: 13px;
+      font-family: inherit;
+    }
+
+    .rate-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background-color: var(--panel);
+      padding: 6px 12px;
+      border-radius: 3px;
+      border: 1px solid var(--line);
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      background-color: #27AE60;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .content-container {
+      padding: 24px;
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .panel {
+      background-color: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      padding: 20px;
+      margin-bottom: 24px;
+    }
+
+    h2 {
+      font-size: 15px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--ink-2);
+      margin-bottom: 16px;
+    }
+
+    .btn {
+      display: inline-block;
+      background-color: var(--green);
+      color: #FFFFFF;
+      text-decoration: none;
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: 3px;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .btn:hover { background-color: var(--green-2); }
+
+    /* --------------------------------------------------------------------------
+       SIGNALEN
+       -------------------------------------------------------------------------- */
+    .signals-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .signal-card {
+      background-color: var(--panel);
+      border: 1px solid var(--line);
+      border-left-width: 4px;
+      border-radius: 4px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .signal-card.urgent { border-left-color: var(--alert-warning); }
+    .signal-card.warning { border-left-color: var(--gold); }
+    .signal-card.neutral { border-left-color: var(--alert-neutral); }
+    .signal-card.whatsapp { border-left-color: var(--whatsapp-green); }
+
+    .signal-header {
+      font-weight: 700;
+      font-size: 14px;
+      margin-bottom: 6px;
+      color: var(--ink);
+    }
+
+    .signal-body {
+      font-size: 13px;
+      color: var(--ink-2);
+      margin-bottom: 16px;
+      flex-grow: 1;
+    }
+
+    .signal-footer { display: flex; justify-content: flex-end; }
+
+    /* --------------------------------------------------------------------------
+       TWEE MEETLATTEN
+       -------------------------------------------------------------------------- */
+    .benchmarks-container {
+      background-color: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      padding: 20px;
+      margin-bottom: 24px;
+    }
+
+    .benchmarks-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .benchmark-column {
+      background-color: #FFFFFF;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      padding: 16px;
+    }
+
+    .benchmark-column.trade { border-top: 3px solid var(--green-2); }
+    .benchmark-column.result { border-top: 3px solid var(--gold); }
+
+    .benchmark-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .benchmark-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 6px 0;
+      font-size: 13px;
+      border-bottom: 1px dashed var(--line);
+    }
+
+    .benchmark-row:last-of-type { border-bottom: none; }
+
+    .benchmark-row.highlight {
+      font-weight: 700;
+      font-size: 15px;
+      border-top: 1px solid var(--ink);
+      border-bottom: 1px solid var(--ink);
+      margin: 8px 0;
+      padding: 8px 0;
+      background-color: #FAFBFB;
+    }
+
+    .benchmark-column.trade .highlight { color: var(--green-2); }
+    .benchmark-column.result .highlight { color: var(--green); }
+
+    .exchange-difference {
+      margin-top: 20px;
+      padding: 14px 16px;
+      background-color: #FFFFFF;
+      border: 1px solid var(--gold-l);
+      border-left: 4px solid var(--gold);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .exchange-difference-label { font-weight: 700; color: var(--ink); font-size: 14px; }
+    .exchange-difference-value { font-weight: 700; color: var(--alert-urgent); font-size: 15px; }
+
+    /* --------------------------------------------------------------------------
+       ONTVANGSTCAPACITEIT
+       -------------------------------------------------------------------------- */
+    .capacity-summary { font-size: 13px; color: var(--ink-2); margin-bottom: 16px; font-weight: 600; }
+    .capacity-list { display: flex; flex-direction: column; gap: 12px; }
+    .capacity-item { background: #FFFFFF; border: 1px solid var(--line); border-radius: 4px; padding: 12px; }
+    .capacity-meta { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px; flex-wrap: wrap; gap: 8px; }
+    .capacity-account { font-weight: 700; }
+    .capacity-exchanger { color: var(--ink-2); }
+    .progress-bar-bg { height: 10px; background-color: var(--line); border-radius: 5px; overflow: hidden; }
+    .progress-bar-fill { height: 100%; background-color: var(--green-2); border-radius: 5px; }
+    .progress-bar-fill.high { background-color: var(--gold); }
+
+    /* --------------------------------------------------------------------------
+       GELD ONDERWEG
+       -------------------------------------------------------------------------- */
+    .money-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
+    .money-card { background-color: var(--panel); border: 1px solid var(--line); border-radius: 4px; padding: 20px; display: flex; flex-direction: column; justify-content: space-between; }
+    .money-card-title { font-size: 13px; color: var(--ink-2); font-weight: 600; margin-bottom: 8px; }
+    .money-card-amount { font-size: 20px; font-weight: 700; color: var(--ink); margin-bottom: 8px; }
+    .money-card-details { font-size: 12px; color: var(--ink-2); }
+    .age-highlight { display: inline-block; margin-top: 8px; padding: 3px 8px; background-color: #FFFFFF; border: 1px solid var(--line); border-radius: 3px; font-weight: 600; color: var(--ink); }
+
+    /* --------------------------------------------------------------------------
+       VOORRAAD
+       -------------------------------------------------------------------------- */
+    .table-container { overflow-x: auto; background-color: #FFFFFF; border: 1px solid var(--line); border-radius: 4px; }
+    table { width: 100%; border-collapse: collapse; text-align: left; font-size: 13px; }
+    th { background-color: var(--panel); color: var(--ink-2); font-weight: 600; padding: 10px 16px; border-bottom: 1px solid var(--line); }
+    td { padding: 12px 16px; border-bottom: 1px solid var(--line); }
+    tr:last-child td { border-bottom: none; }
+    .text-right { text-align: right; }
+    .badge { display: inline-block; padding: 2px 6px; font-size: 11px; font-weight: 700; border-radius: 3px; text-transform: uppercase; letter-spacing: 0.3px; }
+    .badge-op { background-color: #FADBD8; color: #78281F; }
+    .badge-bijbestellen { background-color: #FCF3CF; color: #7D6608; }
+    .badge-ok { background-color: #D4EFDF; color: #145A32; }
+
+    /* --------------------------------------------------------------------------
+       WHATSAPP MODULE
+       -------------------------------------------------------------------------- */
+    .whatsapp-container {
+      background-color: #FFFFFF;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      height: 400px;
+      overflow: hidden;
+      margin-bottom: 24px;
+    }
+
+    .wa-chats-list {
+      border-right: 1px solid var(--line);
+      background-color: var(--panel);
+      overflow-y: auto;
+    }
+
+    .wa-chat-item {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--line);
+      cursor: pointer;
+      transition: background-color 0.15s ease;
+    }
+
+    .wa-chat-item:hover, .wa-chat-item.active {
+      background-color: #FFFFFF;
+    }
+
+    .wa-chat-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
+    }
+
+    .wa-chat-name {
+      font-weight: 700;
+      font-size: 13px;
+      color: var(--ink);
+    }
+
+    .wa-chat-time {
+      font-size: 11px;
+      color: var(--ink-2);
+    }
+
+    .wa-chat-preview {
+      font-size: 12px;
+      color: var(--ink-2);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .wa-chat-unread {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      background-color: var(--whatsapp-green);
+      border-radius: 50%;
+      margin-left: 4px;
+    }
+
+    .wa-window {
+      display: flex;
+      flex-direction: column;
+      background-color: #F8F9FA;
+    }
+
+    .wa-window-header {
+      padding: 12px 16px;
+      background-color: #FFFFFF;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .wa-messages-area {
+      flex-grow: 1;
+      padding: 16px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      background-color: #EFEAE2; /* Echte WhatsApp stijl achtergrond */
+    }
+
+    .wa-bubble {
+      max-width: 70%;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 13px;
+      line-height: 1.4;
+      position: relative;
+      box-shadow: 0 1px 1px rgba(0,0,0,0.08);
+    }
+
+    .wa-bubble.received {
+      background-color: #FFFFFF;
+      align-self: flex-start;
+      border-top-left-radius: 0;
+    }
+
+    .wa-bubble.sent {
+      background-color: #E7FCE3;
+      align-self: flex-end;
+      border-top-right-radius: 0;
+    }
+
+    .wa-bubble-time {
+      font-size: 10px;
+      color: var(--ink-2);
+      text-align: right;
+      margin-top: 4px;
+      display: block;
+    }
+
+    .wa-input-area {
+      padding: 12px;
+      background-color: #FFFFFF;
+      border-top: 1px solid var(--line);
+      display: flex;
+      gap: 8px;
+    }
+
+    .wa-input {
+      flex-grow: 1;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      padding: 8px 12px;
+      font-size: 13px;
+      font-family: inherit;
+      outline: none;
+    }
+
+    .wa-input:focus {
+      border-color: var(--green);
+    }
+
+    .btn-wa {
+      background-color: var(--green);
+      color: #FFFFFF;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .btn-wa:hover {
+      background-color: var(--green-2);
+    }
+
+    /* --------------------------------------------------------------------------
+       VERLOOP DEZE MAAND
+       -------------------------------------------------------------------------- */
+    .chart-container { background-color: #FFFFFF; border: 1px solid var(--line); border-radius: 4px; padding: 20px; }
+    .chart-svg-wrapper { width: 100%; height: 180px; margin-bottom: 12px; }
+    svg { width: 100%; height: 100%; overflow: visible; }
+    .bar { fill: var(--green-2); transition: fill 0.2s ease; }
+    .bar:hover { fill: var(--gold); }
+    .bar-value { font-size: 10px; fill: var(--ink-2); text-anchor: middle; font-weight: 600; }
+    .axis-line { stroke: var(--line); stroke-width: 1; }
+    .axis-text { font-size: 11px; fill: var(--ink-2); text-anchor: middle; }
+    .chart-footer { font-weight: 700; font-size: 13px; color: var(--ink); border-top: 1px solid var(--line); padding-top: 12px; margin-top: 8px; }
+
+    footer { text-align: center; padding: 24px 0 12px 0; font-size: 12px; color: var(--ink-2); opacity: 0.8; }
+
+    /* RESPONSIVE */
+    @media (max-width: 992px) {
+      body { flex-direction: column; }
+      .sidebar { width: 100%; height: auto; position: relative; }
+      .sidebar-brand { padding: 12px 16px; display: flex; align-items: center; gap: 12px; }
+      .sidebar-brand svg { max-width: 190px; }
+      .sidebar-toggle { display: flex; }
+      .sidebar-nav { display: none; padding: 8px 0 12px; }
+      .sidebar.open .sidebar-nav { display: block; }
+      .sidebar-footer { display: none; }
+      .sidebar.open .sidebar-footer { display: flex; justify-content: space-between; align-items: center; padding: 8px 16px; }
+      .user-profile { padding: 0; margin: 0; }
+      .money-grid { grid-template-columns: 1fr; }
+      .whatsapp-container { grid-template-columns: 1fr; height: auto; }
+      .wa-chats-list { height: 150px; }
+      .wa-window { height: 350px; }
+    }
+
+    @media (max-width: 700px) {
+      .benchmarks-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 600px) {
+      .header-inner { flex-direction: column; align-items: flex-start; }
+      .header-meta { width: 100%; justify-content: space-between; }
+      .bar-value { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- SIDEBAR MET KLANTREIS NAVIGATIE -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-logo"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 52">
+        <g transform="translate(2, 2)">
+          <circle cx="24" cy="24" r="9" fill="var(--gold)" />
+          <path d="M 24 5 A 19 19 0 0 1 43 24" fill="none" stroke="var(--gold-l)" stroke-width="3.5" stroke-linecap="round" />
+          <path d="M 24 43 A 19 19 0 0 1 5 24" fill="none" stroke="var(--gold-l)" stroke-width="3.5" stroke-linecap="round" />
+          <line x1="24" y1="10" x2="24" y2="13" stroke="var(--green)" stroke-width="2.5" stroke-linecap="round"/>
+          <line x1="24" y1="35" x2="24" y2="38" stroke="var(--green)" stroke-width="2.5" stroke-linecap="round"/>
+          <line x1="10" y1="24" x2="13" y2="24" stroke="var(--green)" stroke-width="2.5" stroke-linecap="round"/>
+          <line x1="35" y1="24" x2="38" y2="24" stroke="var(--green)" stroke-width="2.5" stroke-linecap="round"/>
+        </g>
+        <text x="60" y="33" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="28" font-weight="800" font-style="italic" fill="var(--gold)" letter-spacing="0.5">Shamsy</text>
+        <text x="61" y="46" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="7.5" font-weight="700" fill="#DFE5E9" letter-spacing="2" opacity="0.85">SOLAR &amp; ENERGY</text>
+      </svg></div>
+      <button class="sidebar-toggle" type="button" aria-label="Menu openen" aria-expanded="false" aria-controls="hoofdmenu">
+        <svg class="icon-open" viewBox="0 0 24 24" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        <svg class="icon-close" viewBox="0 0 24 24" aria-hidden="true"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></svg>
+      </button>
+    </div>
+
+    <nav class="sidebar-nav" id="hoofdmenu">
+      <!-- Stap 1: Inkoop & Voorraad -->
+      <div class="nav-section-title">1. Inkoop &amp; Voorraad</div>
+      <a href="#" class="nav-item">
+        <svg class="nav-icon" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+        <span>Voorraad &amp; Inkoop</span>
+      </a>
+
+      <!-- Stap 2: Verkoop & Klanten -->
+      <div class="nav-section-title">2. Verkoop &amp; Klanten</div>
+      <a href="#" class="nav-item">
+        <svg class="nav-icon" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><polyline points="17 11 19 13 23 9"></polyline></svg>
+        <span>Verkoop &amp; Facturatie</span>
+      </a>
+      <a href="#whatsapp-sectie" class="nav-item">
+        <svg class="nav-icon" viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+        <span>WhatsApp Berichten</span>
+        <span class="nav-badge">2</span>
+      </a>
+      <a href="#" class="nav-item">
+        <svg class="nav-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+        <span>Openstaande Posten</span>
+      </a>
+
+      <!-- Stap 3: Betaling & Wissel -->
+      <div class="nav-section-title">3. Betaling &amp; Wissel</div>
+      <a href="#" class="nav-item">
+        <svg class="nav-icon" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+        <span>Bankrekeningen (SDG)</span>
+      </a>
+      <a href="#" class="nav-item">
+        <svg class="nav-icon" viewBox="0 0 24 24"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg>
+        <span>Wisselaars &amp; Valuta</span>
+      </a>
+
+      <!-- Stap 4: Resultaat & Controle -->
+      <div class="nav-section-title">4. Resultaat &amp; Controle</div>
+      <a href="#" class="nav-item active">
+        <svg class="nav-icon" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+        <span>Dashboard Overzicht</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <a href="#" class="nav-item">
+        <svg class="nav-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+        <span>Settings</span>
+      </a>
+
+      <div class="user-profile">
+        <div class="user-avatar">EL</div>
+        <div class="user-info">
+          <div class="user-name">Eljeli El Tayeb</div>
+          <div class="user-role">Eigenaar</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- RECHTER ZIJDE: HOOFD-CONTENT -->
+  <div class="main-wrapper">
+    
+    <header>
+      <div class="header-inner">
+        <h1 class="page-title">Dashboard Overzicht</h1>
+        <div class="header-meta">
+          <input type="date" class="date-picker num" value="2026-08-13" aria-label="Selecteer datum">
+          <div class="rate-status">
+            <span class="status-dot"></span>
+            <span>Koers vandaag: <strong class="num">6.250 SDG / USD</strong> <span style="opacity: 0.6; font-size: 11px; margin-left: 4px;">(07:40)</span></span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="content-container">
+
+      <!-- SIGNALEN -->
+      <div class="signals-grid">
+        <div class="signal-card urgent">
+          <div>
+            <div class="signal-header">Ga wisselen</div>
+            <div class="signal-body"><span class="num">42.500.000</span> SDG staat <span class="num">4</span> dagen open bij wisselaar Kamal.</div>
+          </div>
+          <div class="signal-footer">
+            <a href="#" class="btn">Bekijken</a>
+          </div>
+        </div>
+
+        <div class="signal-card whatsapp">
+          <div>
+            <div class="signal-header">WhatsApp Vraag</div>
+            <div class="signal-body">Klant Tariq vraagt prijsopgave voor <span class="num">2x</span> Solar AC 1 ton.</div>
+          </div>
+          <div class="signal-footer">
+            <a href="#whatsapp-sectie" class="btn">Beantwoorden</a>
+          </div>
+        </div>
+
+        <div class="signal-card neutral">
+          <div>
+            <div class="signal-header">3 producten bijbestellen</div>
+            <div class="signal-body">Veyron 6 KW, Yukon 3.5 KW, Solar AC 1 ton.</div>
+          </div>
+          <div class="signal-footer">
+            <a href="#" class="btn">Voorraad</a>
+          </div>
+        </div>
+
+        <div class="signal-card warning">
+          <div>
+            <div class="signal-header">Rekening bijna vol</div>
+            <div class="signal-body">Rekening BOK-1 heeft nog <span class="num">1,2</span> mln SDG ruimte vandaag.</div>
+          </div>
+          <div class="signal-footer">
+            <a href="#" class="btn">Rekeningen</a>
+          </div>
+        </div>
+
+        <div class="signal-card warning">
+          <div>
+            <div class="signal-header">2 klanten te laat</div>
+            <div class="signal-body">Samen <span class="num">18.750.000</span> SDG, oudste <span class="num">9</span> dagen.</div>
+          </div>
+          <div class="signal-footer">
+            <a href="#" class="btn">Openstaand</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- TWEE MEETLATTEN -->
+      <section class="benchmarks-container">
+        <h2>Handelsresultaat vs. Effectief Resultaat</h2>
+        <div class="benchmarks-grid">
+          
+          <div class="benchmark-column trade">
+            <div class="benchmark-title">HANDEL, in dollars</div>
+            <div class="benchmark-row">
+              <span>Omzet</span>
+              <span class="num">$ 34.200</span>
+            </div>
+            <div class="benchmark-row">
+              <span>Kostprijs verkochte goederen</span>
+              <span class="num">$ 23.530</span>
+            </div>
+            <div class="benchmark-row highlight">
+              <span>BRUTOMARGE</span>
+              <span class="num">$ 10.670</span>
+            </div>
+            <div class="benchmark-row">
+              <span>Marge</span>
+              <span class="num">31,2%</span>
+            </div>
+          </div>
+
+          <div class="benchmark-column result">
+            <div class="benchmark-title">RESULTAAT, in euro's</div>
+            <div class="benchmark-row">
+              <span>Opbrengst</span>
+              <span class="num">€ 28.150</span>
+            </div>
+            <div class="benchmark-row">
+              <span>Kostprijs verkochte goederen</span>
+              <span class="num">€ 20.235</span>
+            </div>
+            <div class="benchmark-row highlight">
+              <span>NETTOWINST</span>
+              <span class="num">€ 7.915</span>
+            </div>
+            <div class="benchmark-row">
+              <span>Nettomarge</span>
+              <span class="num">28,1%</span>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="exchange-difference">
+          <div class="exchange-difference-label">Verklaring verschil (Puur valutaresultaat)</div>
+          <div class="exchange-difference-value">
+            Wisselresultaat: <span class="num">-$ 1.150</span> <span style="font-weight: 400; font-size: 13px; color: var(--ink-2); margin-left: 4px;">(<span class="num">4,0%</span> van het gewisselde bedrag)</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ONTVANGSTCAPACITEIT -->
+      <section class="panel">
+        <h2>Ontvangstcapaciteit vandaag</h2>
+        <div class="capacity-summary">
+          Totaal benut: <span class="num">23.400.000</span> van <span class="num">75.000.000</span> SDG benut · <span class="num">31%</span>
+        </div>
+
+        <div class="capacity-list">
+          <div class="capacity-item">
+            <div class="capacity-meta">
+              <div>
+                <span class="capacity-account">BOK-1</span>
+                <span class="capacity-exchanger"> · wisselaar Kamal</span>
+              </div>
+              <div class="num">
+                <strong>13.800.000</strong> van 15.000.000 SDG (92%)
+              </div>
+            </div>
+            <div class="progress-bar-bg">
+              <div class="progress-bar-fill high" style="width: 92%;"></div>
+            </div>
+          </div>
+
+          <div class="capacity-item">
+            <div class="capacity-meta">
+              <div>
+                <span class="capacity-account">BOK-2</span>
+                <span class="capacity-exchanger"> · wisselaar Kamal</span>
+              </div>
+              <div class="num">
+                <strong>8.200.000</strong> van 15.000.000 SDG (55%)
+              </div>
+            </div>
+            <div class="progress-bar-bg">
+              <div class="progress-bar-fill" style="width: 55%;"></div>
+            </div>
+          </div>
+
+          <div class="capacity-item">
+            <div class="capacity-meta">
+              <div>
+                <span class="capacity-account">FSB-1</span>
+                <span class="capacity-exchanger"> · wisselaar Osman</span>
+              </div>
+              <div class="num">
+                <strong>1.400.000</strong> van 15.000.000 SDG (9%)
+              </div>
+            </div>
+            <div class="progress-bar-bg">
+              <div class="progress-bar-fill" style="width: 9%;"></div>
+            </div>
+          </div>
+
+          <div class="capacity-item">
+            <div class="capacity-meta">
+              <div>
+                <span class="capacity-account">FSB-2</span>
+                <span class="capacity-exchanger"> · wisselaar Osman</span>
+              </div>
+              <div class="num">
+                <strong>0</strong> van 15.000.000 SDG (0%)
+              </div>
+            </div>
+            <div class="progress-bar-bg">
+              <div class="progress-bar-fill" style="width: 0%;"></div>
+            </div>
+          </div>
+
+          <div class="capacity-item">
+            <div class="capacity-meta">
+              <div>
+                <span class="capacity-account">OMD-1</span>
+                <span class="capacity-exchanger"> · wisselaar Tarig</span>
+              </div>
+              <div class="num">
+                <strong>0</strong> van 15.000.000 SDG (0%)
+              </div>
+            </div>
+            <div class="progress-bar-bg">
+              <div class="progress-bar-fill" style="width: 0%;"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- GELD ONDERWEG -->
+      <section class="money-grid">
+        <div class="money-card">
+          <div>
+            <div class="money-card-title">Openstaand bij klanten</div>
+            <div class="money-card-amount num">31.250.000 SDG</div>
+            <div class="money-card-details">6 facturen totaal</div>
+          </div>
+          <div>
+            <div class="age-highlight">Oudste: <span class="num">9</span> dagen oud</div>
+          </div>
+        </div>
+
+        <div class="money-card">
+          <div>
+            <div class="money-card-title">Uitstaand bij wisselaars</div>
+            <div class="money-card-amount num">42.500.000 SDG</div>
+            <div class="money-card-details">2 wisselaars actief</div>
+          </div>
+          <div>
+            <div class="age-highlight">Oudste: <span class="num">4</span> dagen oud</div>
+          </div>
+        </div>
+
+        <div class="money-card">
+          <div>
+            <div class="money-card-title">Voorraadwaarde</div>
+            <div class="money-card-amount num">$ 36.453</div>
+            <div class="money-card-details"><span class="num">€ 31.350</span> equivalent</div>
+          </div>
+          <div>
+            <div class="age-highlight"><span class="num">56</span> stuks in magazijn</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- VOORRAAD -->
+      <section class="panel">
+        <h2>Voorraad: 6 laagste standen</h2>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th class="text-right">Op voorraad</th>
+                <th class="text-right">Minimum</th>
+                <th class="text-right">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Veyron 6 KW</strong></td>
+                <td class="text-right num">1</td>
+                <td class="text-right num">2</td>
+                <td class="text-right"><span class="badge badge-bijbestellen">Bijbestellen</span></td>
+              </tr>
+              <tr>
+                <td><strong>Yukon 3.5 KW</strong></td>
+                <td class="text-right num">0</td>
+                <td class="text-right num">2</td>
+                <td class="text-right"><span class="badge badge-op">Op</span></td>
+              </tr>
+              <tr>
+                <td><strong>Solar AC 1 ton</strong></td>
+                <td class="text-right num">2</td>
+                <td class="text-right num">3</td>
+                <td class="text-right"><span class="badge badge-bijbestellen">Bijbestellen</span></td>
+              </tr>
+              <tr>
+                <td>Nitrox 8 KW</td>
+                <td class="text-right num">4</td>
+                <td class="text-right num">3</td>
+                <td class="text-right"><span class="badge badge-ok">OK</span></td>
+              </tr>
+              <tr>
+                <td>IG Deye 6 KW Off-grid</td>
+                <td class="text-right num">14</td>
+                <td class="text-right num">6</td>
+                <td class="text-right"><span class="badge badge-ok">OK</span></td>
+              </tr>
+              <tr>
+                <td>IG Deye Lithium-ion SE-F5</td>
+                <td class="text-right num">19</td>
+                <td class="text-right num">8</td>
+                <td class="text-right"><span class="badge badge-ok">OK</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- WHATSAPP BERICHTEN MODULE -->
+      <section id="whatsapp-sectie" class="panel">
+        <h2>WhatsApp Klantcontact</h2>
+        <div class="whatsapp-container">
+          
+          <!-- Chats Lijst -->
+          <div class="wa-chats-list">
+            <div class="wa-chat-item active">
+              <div class="wa-chat-header">
+                <span class="wa-chat-name">Tariq (Solar Project)</span>
+                <span class="wa-chat-time num">10:14</span>
+              </div>
+              <div class="wa-chat-preview">Hebben jullie nog 2x Solar AC 1 ton direct beschikbaar? <span class="wa-chat-unread"></span></div>
+            </div>
+
+            <div class="wa-chat-item">
+              <div class="wa-chat-header">
+                <span class="wa-chat-name">+249 91 234 5678</span>
+                <span class="wa-chat-time num">09:42</span>
+              </div>
+              <div class="wa-chat-preview">Screenshot van Bank van Khartoum betaling verstuurd... <span class="wa-chat-unread"></span></div>
+            </div>
+
+            <div class="wa-chat-item">
+              <div class="wa-chat-header">
+                <span class="wa-chat-name">Wisselaar Kamal</span>
+                <span class="wa-chat-time num">Gisteren</span>
+              </div>
+              <div class="wa-chat-preview">Koers staat nu op 6.250 SDG. Laat weten wanneer de overboeking er is.</div>
+            </div>
+          </div>
+
+          <!-- Chat Venster -->
+          <div class="wa-window">
+            <div class="wa-window-header">
+              <div>
+                <strong>Tariq (Solar Project)</strong>
+                <div style="font-size: 11px; color: var(--ink-2);">+249 92 111 2233 · Khartoum</div>
+              </div>
+              <span class="badge badge-ok">Actieve Klant</span>
+            </div>
+
+            <div class="wa-messages-area" id="wa-chat-box">
+              <div class="wa-bubble received">
+                Goedemorgen Eljeli, wat is de actuele prijs voor de Veyron 6 KW inverters?
+                <span class="wa-bubble-time num">09:30</span>
+              </div>
+              <div class="wa-bubble sent">
+                Goedemorgen Tariq, deze staan momenteel scherp geprijsd op $ 491 per stuk.
+                <span class="wa-bubble-time num">09:35 ✓✓</span>
+              </div>
+              <div class="wa-bubble received">
+                Helder. En hebben jullie nog 2x Solar AC 1 ton direct op voorraad in het magazijn?
+                <span class="wa-bubble-time num">10:14</span>
+              </div>
+            </div>
+
+            <div class="wa-input-area">
+              <input type="text" id="wa-input-field" class="wa-input" placeholder="Typ een bericht of offerte-link..." onkeypress="if(event.key==='Enter') sendWaMessage()">
+              <button class="btn-wa" onclick="sendWaMessage()">Verstuur</button>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- VERLOOP DEZE MAAND -->
+      <section class="chart-container">
+        <h2>Verloop deze maand (Brutomarge in USD)</h2>
+        
+        <div class="chart-svg-wrapper">
+          <svg viewBox="0 0 650 160" preserveAspectRatio="none">
+            <line x1="0" y1="20" x2="650" y2="20" stroke="#DFE5E9" stroke-dasharray="2" />
+            <line x1="0" y1="75" x2="650" y2="75" stroke="#DFE5E9" stroke-dasharray="2" />
+            <line x1="0" y1="130" x2="650" y2="130" class="axis-line" />
+
+            <rect class="bar" x="10" y="101.7" width="30" height="28.3" />
+            <text class="bar-value num" x="25" y="95">$410</text>
+            <text class="axis-text num" x="25" y="148">1</text>
+
+            <rect class="bar" x="60" y="130" width="30" height="0" />
+            <text class="axis-text num" x="75" y="148">2</text>
+
+            <rect class="bar" x="110" y="68.7" width="30" height="61.3" />
+            <text class="bar-value num" x="125" y="62">$890</text>
+            <text class="axis-text num" x="125" y="148">3</text>
+
+            <rect class="bar" x="160" y="44.5" width="30" height="85.5" />
+            <text class="bar-value num" x="175" y="38">$1.240</text>
+            <text class="axis-text num" x="175" y="148">4</text>
+
+            <rect class="bar" x="210" y="77.6" width="30" height="52.4" />
+            <text class="bar-value num" x="225" y="71">$760</text>
+            <text class="axis-text num" x="225" y="148">5</text>
+
+            <rect class="bar" x="260" y="130" width="30" height="0" />
+            <text class="axis-text num" x="275" y="148">6</text>
+
+            <rect class="bar" x="310" y="130" width="30" height="0" />
+            <text class="axis-text num" x="325" y="148">7</text>
+
+            <rect class="bar" x="360" y="25.8" width="30" height="104.2" />
+            <text class="bar-value num" x="375" y="19">$1.510</text>
+            <text class="axis-text num" x="375" y="148">8</text>
+
+            <rect class="bar" x="410" y="62.4" width="30" height="67.6" />
+            <text class="bar-value num" x="425" y="56">$980</text>
+            <text class="axis-text num" x="425" y="148">9</text>
+
+            <rect class="bar" x="460" y="52.8" width="30" height="77.2" />
+            <text class="bar-value num" x="475" y="46">$1.120</text>
+            <text class="axis-text num" x="475" y="148">10</text>
+
+            <rect class="bar" x="510" y="85.9" width="30" height="44.1" />
+            <text class="bar-value num" x="525" y="79">$640</text>
+            <text class="axis-text num" x="525" y="148">11</text>
+
+            <rect class="bar" x="560" y="11.0" width="30" height="119.0" />
+            <text class="bar-value num" x="575" y="6">$1.870</text>
+            <text class="axis-text num" x="575" y="148">12</text>
+
+            <rect class="bar" x="610" y="43.8" width="30" height="86.2" />
+            <text class="bar-value num" x="625" y="37">$1.250</text>
+            <text class="axis-text num" x="625" y="148">13</text>
+          </svg>
+        </div>
+
+        <div class="chart-footer">
+          Brutomarge augustus t/m 13 aug: <span class="num">$ 10.670</span>
+        </div>
+      </section>
+
+      <footer>
+        Voorbeeldweergave, cijfers ter illustratie
+      </footer>
+
+    </main>
+  </div>
+
+  <!-- INLINE JAVASCRIPT VOOR INTERACTIEVE WHATSAPP-CHAT -->
+  <script>
+    function sendWaMessage() {
+      var input = document.getElementById('wa-input-field');
+      var chatBox = document.getElementById('wa-chat-box');
+      
+      if (input.value.trim() !== "") {
+        var now = new Date();
+        var hours = String(now.getHours()).padStart(2, '0');
+        var minutes = String(now.getMinutes()).padStart(2, '0');
+        
+        var bubble = document.createElement('div');
+        bubble.className = 'wa-bubble sent';
+        bubble.innerHTML = input.value + '<span class="wa-bubble-time num">' + hours + ':' + minutes + ' ✓</span>';
+        
+        chatBox.appendChild(bubble);
+        chatBox.scrollTop = chatBox.scrollHeight;
+        input.value = '';
+      }
+    }
+  </script>
+
+  <script>
+    (function () {
+      var sidebar = document.querySelector('.sidebar');
+      var knop = document.querySelector('.sidebar-toggle');
+      if (!sidebar || !knop) return;
+
+      function zet(open) {
+        sidebar.classList.toggle('open', open);
+        knop.setAttribute('aria-expanded', open ? 'true' : 'false');
+        knop.setAttribute('aria-label', open ? 'Menu sluiten' : 'Menu openen');
+      }
+
+      knop.addEventListener('click', function () {
+        zet(!sidebar.classList.contains('open'));
+      });
+
+      // na het kiezen van een menu-item sluit het menu weer
+      sidebar.querySelectorAll('.nav-item').forEach(function (item) {
+        item.addEventListener('click', function () {
+          if (window.matchMedia('(max-width: 992px)').matches) zet(false);
+        });
+      });
+
+      // terug naar breed scherm: altijd open state opruimen
+      window.matchMedia('(min-width: 993px)').addEventListener('change', function (e) {
+        if (e.matches) zet(false);
+      });
+    })();
+  </script>
+</body>
+</html>
