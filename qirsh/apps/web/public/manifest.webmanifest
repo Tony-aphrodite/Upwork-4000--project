@@ -1,0 +1,12 @@
+{
+  "name": "Qirsh · Orders, money and stock",
+  "short_name": "Qirsh",
+  "description": "Orders at fixed dollar prices, receipts in pounds, reports in euros, stock and customers.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f5f7f5",
+  "theme_color": "#1e4d3b",
+  "icons": [{ "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }]
+}

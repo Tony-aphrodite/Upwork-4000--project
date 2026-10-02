@@ -1,0 +1,17 @@
+{
+  "name": "@qirsh/db",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "bundle-sql": "node scripts/bundle-sql.mjs",
+    "test": "node scripts/bundle-sql.mjs && vitest run",
+    "typecheck": "node scripts/bundle-sql.mjs && tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "@electric-sql/pglite": "0.5.8",
+    "@qirsh/money": "*"
+  }
+}

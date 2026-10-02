@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - uses: nrwl/nx-set-shas@v4
+      # Typecheck, unit tests (money rules), database tests (every migration, the acceptance
+      # checks and the demo data, in Postgres via PGlite) and the production build, for the
+      # projects a change touches.
+      - run: npx nx affected -t typecheck test build --parallel=2
+
+  # Deploys: Vercel builds apps/web on every push (preview per pull request, production on main).
+  # Migrations go to Supabase from main only, after the checks pass.
+  migrate:
+    if: github.ref == 'refs/heads/main' && vars.SUPABASE_PROJECT_ID != ''
+    needs: check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: supabase/setup-cli@v1
+      - run: supabase link --project-ref ${{ vars.SUPABASE_PROJECT_ID }}
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+      - run: supabase db push
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
